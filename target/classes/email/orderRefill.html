@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<style>
+		p {
+			margin: 0;
+		}
+
+		.container-wrapper {
+			width: 100%;
+			height: 100%;
+			background-color: #c1c1c1;
+			margin: 0;
+			font-family: "Arial";
+			display: inline-block;
+		}
+
+		.container {
+			width: 600px;
+			margin: 25px auto;
+			background-color: #ffffff;
+			padding: 10px;
+			border-top: 3px solid #bb9157;
+		}
+
+		.container-sub {
+			background-color: #ebebeb;
+			padding: 0 20px;
+		}
+
+		.logo {
+			width: 120px;
+			padding: 20px 0 20px 0;
+			margin: 0 auto;
+		}
+
+		.start {
+			padding: 30px 0;
+			border-top: 1px solid #a7a7a7;
+			border-bottom: 2px solid #bb9157;
+		}
+
+		.title {
+			font-size: 30px;
+			text-align: center;
+			font-weight: bold;
+			letter-spacing: 1px;
+			font-family: "Times New Roman";
+		}
+
+		.content {
+			font-size: 14px;
+			color: #565656;
+			padding: 20px 0;
+			text-align: justify;
+			line-height: 20px;
+		}
+
+		.content .bold {
+			font-weight: bold;
+		}
+
+		.content a {
+			text-decoration: none;
+			color: #000000;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container-wrapper">
+		<div class="container">
+			<div class="container-sub">
+				<div class="logo">
+					<img src="cid:logoBlack" alt="" />
+				</div>
+				<div class="start">
+					<p class="title">{title}</p>
+				</div>
+				<div class="content">
+					<p>Pharmacy RX num: <span class="bold">{pharmacyId}</span></p>
+					<p>Date: <span class="bold">{orderDate}</span></p>
+					<p>Patient name: {patientName}</p>
+					<p>Winston order number: #{orderId}</p>
+					<p>Refills left: <span class="bold">{refillsLeft}</span></p>
+					<p class="bold">Drug information:</p>
+					<p>Name: <span class="bold">{productName}</span></p>
+					<p>Dosage: <span class="bold">{productDosage}</span></p>
+					<p>Quantity: <span class="bold">{productTabs}</span></p>
+					<p>Shipping details: {shippingInfo}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

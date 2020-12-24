@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="JavaAPI">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/resources/moneris/JavaAPI.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

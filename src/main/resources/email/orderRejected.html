@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <style>
+        .container-wrapper {
+            width: 100%;
+            height: 100%;
+            background-color: #c1c1c1;
+            margin: 0;
+            font-family: "Arial";
+            display: inline-block;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .container {
+            width: 600px;
+            margin: 25px auto 50px auto;
+            background-color: #ffffff;
+            padding: 10px;
+            border-top: 3px solid #bb9157;
+        }
+
+        .container .content {
+            background-color: #ebebeb;
+        }
+
+        .container .content .logo {
+            width: 120px;
+            padding: 20px 0 40px 0;
+            margin: 0 auto;
+        }
+
+        .container .content .start {
+            margin: 0 30px;
+            padding: 30px 0;
+            border-top: 1px solid #a7a7a7;
+            border-bottom: 2px solid #bb9157;
+        }
+
+        .container .content .start .title {
+            font-size: 47px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-family: "Times New Roman";
+            padding-bottom: 20px;
+        }
+
+        .container .content .start .icon-doctor {
+            width: 80px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .container .content .start .explanation {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .container .content .order-info {
+            margin: 0 30px;
+            padding: 20px 0 30px 0;
+            font-size: 16px;
+            color: #565656;
+        }
+
+        .container .content .order-info .bold {
+            color: #000000;
+        }
+
+        .container .content .order-info p {
+            padding-bottom: 5px;
+        }
+
+        .container .content .end-img {
+            border-top: 3px solid #ffffff;
+        }
+
+        .container .content .end-img img {
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-wrapper">
+        <div class="container">
+            <div class="content">
+                <div class="logo">
+                    <img src="cid:logoBlack" alt="" />
+                </div>
+                <div class="start">
+                    <p class="title">Your order is rejected</p>
+                    <p class="explanation">{notes}</p>
+                </div>
+                <div class="order-info">
+                    <p>Order number: <span class="bold">{orderId}</span></p>
+                    <p>Date: <span class="bold">{orderDate}</span></p>
+                    <p>Billing info: <span class="bold">{billingInfo}</span></p>
+                    <p>Shipping info: <span class="bold">{shippingInfo}</span></p>
+                    <br />
+                    <p class="bold">{productsInfo}</p>
+                    <p>Total price: <span class="bold">${totalPrice}</span></p>
+                </div>
+                <div class="end-img">
+                    <img src="cid:rejectImage" alt="" />
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

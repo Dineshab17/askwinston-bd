@@ -1,0 +1,35 @@
+package com.askwinston.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Data
+@Builder
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+public class RxTransferStateRecord {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String productCategoryLabel;
+    private String productCategoryValue;
+    private String productLabel;
+    private String productValue;
+    private String quantityLabel;
+    private String quantityValue;
+    private Long userId;
+    private int step;
+    private String rxNumber;
+    private String pharmacyName;
+    private String pharmacyPhone;
+    private String bottleImageId;
+}

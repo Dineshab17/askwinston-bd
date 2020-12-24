@@ -1,0 +1,1 @@
+ALTER TABLE product_subscription CHANGE rejection_notes notes varchar(255);

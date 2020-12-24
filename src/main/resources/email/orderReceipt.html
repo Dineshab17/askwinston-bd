@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<style>
+		p {
+			margin: 0;
+		}
+
+		.bold {
+			font-weight: bold;
+			color: #000000;
+		}
+
+		.container-wrapper {
+			width: 100%;
+			height: 100%;
+			background-color: #c1c1c1;
+			margin: 0;
+			font-family: "Arial";
+			display: inline-block;
+		}
+
+		.container-1 {
+			width: 600px;
+			margin: 25px auto 0 auto;
+			background-color: #ffffff;
+			padding: 10px;
+			border-top: 3px solid #bb9157;
+		}
+
+		.container-2 {
+			width: 600px;
+			margin: 0 auto 50px auto;
+			background-color: #ffffff;
+			padding: 0 10px 10px 10px;
+		}
+
+		.content-1-1 {
+			background-color: #ebebeb;
+			padding: 0 20px;
+		}
+
+		.content-1-2 {
+			background-color: #dddddd;
+			padding: 0 20px;
+		}
+
+		.content-2 {
+			background-color: #ebebeb;
+			padding: 0 20px;
+		}
+
+		.logo-1 {
+			width: 120px;
+			padding: 20px 0 20px 0;
+			margin: 0 auto;
+		}
+
+		.start-1 {
+			padding: 30px 0;
+			border-top: 1px solid #a7a7a7;
+			border-bottom: 2px solid #bb9157;
+		}
+
+		.start-2 {
+			padding: 30px 0;
+			border-bottom: 1px solid #a7a7a7;
+		}
+
+		.title-1-1 {
+			font-size: 30px;
+			text-align: center;
+			font-weight: bold;
+			letter-spacing: 2px;
+			font-family: "Times New Roman";
+			padding-bottom: 20px;
+		}
+
+		.title-1-2 {
+			font-size: 18px;
+			text-align: center;
+			font-weight: bold;
+			letter-spacing: 1px;
+			font-family: "Times New Roman";
+		}
+
+		.title-2 {
+			font-size: 30px;
+			text-align: center;
+			font-weight: bold;
+			letter-spacing: 2px;
+			font-family: "Times New Roman";
+		}
+
+		.order-info {
+			font-size: 14px;
+			color: #565656;
+			padding: 20px 0;
+			text-align: justify;
+			line-height: 20px;
+		}
+
+		.order-info p {
+			padding-bottom: 5px;
+		}
+
+		.order-info a {
+			text-decoration: none;
+			color: #000000;
+		}
+
+		.order-info .no-bottom-padding {
+			padding-bottom: 0;
+		}
+
+		.end-2 {
+			font-size: 14px;
+			color: #565656;
+			padding: 20px 0;
+			border-top: 2px solid #bb9157;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container-wrapper">
+		<div class="container-1">
+			<div class="content-1-1">
+				<div class="logo-1">
+					<img src="cid:logoBlack" alt="" />
+				</div>
+				<div class="start-1">
+					<p class="title-1-1">Congratulations!</p>
+					<p class="title-1-2">Your order is complete and on the way!</p>
+				</div>
+				<div class="order-info">
+					<p class="bold no-bottom-padding">Shipping Information</p>
+					<br>
+					<p>Courier: <span class="bold">{carrier}</span></p>
+					<p>Service: <span class="bold">{service}</span></p>
+					<p class="no-bottom-padding">Tracking Number: <span class="bold"><a href="{trackingUrl}" target="_blank">{trackingNumber}</a></span></p>
+				</div>
+			</div>
+			<div class="content-1-2">
+				<div class="order-info">
+					<p class="no-bottom-padding">
+						Please contact our pharmacy partner at 1-888-404-4002 with any questions regarding your medication.
+					</p>
+					<br>
+					<p class="bold no-bottom-padding">
+						Track your package using the tracking number above.
+					</p>
+					<br>
+					<p class="no-bottom-padding">
+						We would love to hear from you. Please reach out to us with any questions, comments, or general feedback at <span class="bold"><a href="mailto:WeListen@askwinston.ca">WeListen@askwinston.ca</a></span>.
+					</p>
+					<br />
+					<p class="no-bottom-padding">
+						Thank you for choosing Winston!
+					</p>
+					<br />
+					<p class="no-bottom-padding">
+						COVID-19 Update: Please note that due to extremely high demand our shipments may be delayed 2-3 business days.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="container-2">
+			<div class="content-2">
+				<div class="start-2">
+					<p class="title-2">Receipt</p>
+				</div>
+				<div class="order-info">
+					<p class="bold no-bottom-padding">Winston</p>
+					<br>
+					<p class="bold">Doctor Information:</p>
+					<p>Name: <span class="bold">{doctorName}</span></p>
+					<br>
+					<p class="no-bottom-padding">Date of Prescription: <span class="bold">{dateOfPrescription}</span>
+					</p>
+					<br>
+					<p class="bold">Patient Information:</p>
+					<p>Name: <span class="bold">{patientName}</span></p>
+					<p>Date of Birth: <span class="bold">{dateOfBirth}</span></p>
+					<p class="no-bottom-padding">Address: <span class="bold">{patientAddress}</span></p>
+					<br>
+					<p class="bold">Drug Information:</p>
+					<p>Drug name and Dosage: <span class="bold">{dragNameAndDosage}</span></p>
+					<p>Quantity: <span class="bold">{quantity}</span></p>
+					<p class="no-bottom-padding">Refills: <span class="bold">11</span></p>
+					<br>
+					<p class="no-bottom-padding">Grand Total: <span class="bold">${totalPrice}</span></p>
+				</div>
+				<div class="end-2">
+					<p><span class="bold">Note:</span>
+						The total cost includes the pharmacy dispensing fee of $12
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
