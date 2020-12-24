@@ -1,0 +1,4 @@
+*.properties merge=ours
+aw.yaml merge=ours
+.env merge=ours
+General.const.tsx merge=ours
