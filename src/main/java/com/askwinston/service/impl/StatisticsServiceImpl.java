@@ -54,17 +54,20 @@ public class StatisticsServiceImpl implements StatisticsService {
         row.createCell(1).setCellValue("Customer Name");
         row.createCell(2).setCellValue("Date of Birth");
         row.createCell(3).setCellValue("Email");
-        row.createCell(4).setCellValue("Phone Number");
-        row.createCell(5).setCellValue("Order ID");
-        row.createCell(6).setCellValue("Product + Dosage");
-        row.createCell(7).setCellValue("Amount");
-        row.createCell(8).setCellValue("Co-pay");
-        row.createCell(9).setCellValue("Has Insurance");
-        row.createCell(10).setCellValue("Order Date");
-        row.createCell(11).setCellValue("Shipping Date");
-        row.createCell(12).setCellValue("Shipping Address");
-        row.createCell(13).setCellValue("Tracking Number");
-        row.createCell(14).setCellValue("Promo Code");
+        row.createCell(4).setCellValue("Moneris ID");
+        row.createCell(5).setCellValue("Phone Number");
+        row.createCell(6).setCellValue("Order ID");
+        row.createCell(7).setCellValue("Product + Dosage");
+        row.createCell(8).setCellValue("Amount");
+        row.createCell(9).setCellValue("Co-pay");
+        row.createCell(10).setCellValue("Transaction ID");
+        row.createCell(11).setCellValue("Has Insurance");
+        row.createCell(12).setCellValue("Order Date");
+        row.createCell(13).setCellValue("Shipping Date");
+        row.createCell(14).setCellValue("Shipping Address");
+        row.createCell(15).setCellValue("Tracking Number");
+        row.createCell(16).setCellValue("Promo Code");
+
         List<OrderReportRecord> records = getShippedOrdersReport(from, to);
         records.forEach(r -> {
             Row row1 = sheet.createRow(rows[0]++);
@@ -72,17 +75,19 @@ public class StatisticsServiceImpl implements StatisticsService {
             row1.createCell(1).setCellValue(r.getCustomerName());
             row1.createCell(2).setCellValue(r.getDateOfBirth());
             row1.createCell(3).setCellValue(r.getEmail());
-            row1.createCell(4).setCellValue(r.getPhone());
-            row1.createCell(5).setCellValue(r.getOrderNumber());
-            row1.createCell(6).setCellValue(r.getProductAndDosage());
-            row1.createCell(7).setCellValue(r.getAmount());
-            row1.createCell(8).setCellValue(r.getCoPay());
-            row1.createCell(9).setCellValue(r.isHasInsurance() ? "Yes" : "No");
-            row1.createCell(10).setCellValue(r.getOrderDate());
-            row1.createCell(11).setCellValue(r.getShippingDate());
-            row1.createCell(12).setCellValue(r.getShippingAddress());
-            row1.createCell(13).setCellValue(r.getTrackingNumber());
-            row1.createCell(14).setCellValue(r.getPromoCode());
+            row1.createCell(4).setCellValue(r.getBillingCard());
+            row1.createCell(5).setCellValue(r.getPhone());
+            row1.createCell(6).setCellValue(r.getOrderNumber());
+            row1.createCell(7).setCellValue(r.getProductAndDosage());
+            row1.createCell(8).setCellValue(r.getAmount());
+            row1.createCell(9).setCellValue(r.getCoPay());
+            row1.createCell(10).setCellValue(r.getTransactionId());
+            row1.createCell(11).setCellValue(r.isHasInsurance() ? "Yes" : "No");
+            row1.createCell(12).setCellValue(r.getOrderDate());
+            row1.createCell(13).setCellValue(r.getShippingDate());
+            row1.createCell(14).setCellValue(r.getShippingAddress());
+            row1.createCell(15).setCellValue(r.getTrackingNumber());
+            row1.createCell(16).setCellValue(r.getPromoCode());
         });
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -175,8 +180,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         AtomicLong i = new AtomicLong(1);
         orders.forEach(o -> {
             User user = o.getUser();
+            BillingCard billingCard = user.getPrimaryBillingCard();
+
             String shippingAddress = o.getShippingAddressCountry() + " " + o.getShippingAddressCity() + " " +
                     o.getShippingAddressLine1() + " " + o.getShippingAddressLine2() + " " + o.getShippingAddressPostalCode();
+
             OrderReportRecord record = OrderReportRecord.builder()
                     .id(i.getAndIncrement())
                     .customerName(user.getFirstName() + " " + user.getLastName())
@@ -193,7 +201,10 @@ public class StatisticsServiceImpl implements StatisticsService {
                     .shippingAddress(shippingAddress)
                     .trackingNumber(o.getShippingTrackingNumber())
                     .promoCode(o.getPromoCode() == null ? "" : o.getPromoCode())
+                    .billingCard(billingCard == null ? "" :  billingCard.getId())
+                    .transactionId(o.getTransactionId())
                     .build();
+
             result.add(record);
         });
         return result;

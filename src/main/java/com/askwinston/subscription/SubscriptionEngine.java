@@ -148,6 +148,10 @@ public class SubscriptionEngine {
     }
 
     protected void processSubscription(ProductSubscription subscription) {
+        processSubscription(subscription, false);
+    }
+
+    protected void processSubscription(ProductSubscription subscription, boolean earlyRefill) {
         checkPrescriptionDate(subscription);
         if (subscription.getStatus().equals(ProductSubscription.Status.ACTIVE)) {
             sendOrderToPharmacy(subscription.getOrders().stream()
@@ -165,11 +169,12 @@ public class SubscriptionEngine {
             updatedSubscription.setNextOrderDate(now().plusMonths(updatedSubscription.getPeriod()).plusDays(DELIVERY_DAYS));
             subscriptionRepository.save(updatedSubscription);
 
-            notificationEngine.notify(NotificationEventTypeContainer.EARLY_REFILL_SUBMITTED, updatedSubscription);
+            if (earlyRefill) {
+                notificationEngine.notify(NotificationEventTypeContainer.EARLY_REFILL_SUBMITTED, updatedSubscription);
+            }
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subscription " + subscription.getId() + " inactive");
         }
-
     }
 
     public LocalDate convertToLocalDateViaInstant(Date dateToConvert) {

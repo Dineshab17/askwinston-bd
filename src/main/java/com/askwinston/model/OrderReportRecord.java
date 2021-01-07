@@ -26,5 +26,6 @@ public class OrderReportRecord {
     private String shippingAddress;
     private String trackingNumber;
     private String promoCode;
-
+    private String billingCard;
+    private String transactionId;
 }

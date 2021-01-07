@@ -148,7 +148,7 @@ public class SubscriptionController {
         if (!subscription.getUser().getId().equals(principal.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
         }
-        subscriptionEngine.processSubscription(subscription);
+        subscriptionEngine.processSubscription(subscription, true);
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 

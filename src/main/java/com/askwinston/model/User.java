@@ -11,6 +11,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Entity
 @Data
@@ -34,7 +35,7 @@ public class User implements Notifiable {
             return categories;
         }
 
-        private Product.ProblemCategory[] categories;
+        private final Product.ProblemCategory[] categories;
     }
 
     @Id
@@ -90,4 +91,14 @@ public class User implements Notifiable {
     @Enumerated(EnumType.STRING)
     private DoctorSpecialisation specialisation;
 
+    public BillingCard getPrimaryBillingCard() {
+        AtomicReference<BillingCard> primaryCard = new AtomicReference<>();
+        billingCards.forEach(billingCard -> {
+            if (billingCard.isPrimary()) {
+                primaryCard.set(billingCard);
+            }
+        });
+
+        return primaryCard.get();
+    }
 }
