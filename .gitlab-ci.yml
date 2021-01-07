@@ -29,3 +29,27 @@ docker-build:
   - docker push "$CI_REGISTRY_IMAGE":demo
   only:
   - master
+
+deploy_to_google_demo:
+  image: 'google/cloud-sdk:alpine'
+  stage: deploy
+  script:
+  # Authenticate with GKE
+  # - echo "$SERVICE_ACCOUNT_KEY" > key.json
+  # - cat key.json
+  - gcloud auth activate-service-account --key-file=key.json
+  - gcloud config set project askwinston-251209
+  - gcloud config set container/cluster aw-dev
+  - gcloud config set compute/zone northamerica-northeast1-c
+  - gcloud container clusters get-credentials aw-dev --zone northamerica-northeast1-c
+  - gcloud components install kubectl
+  - kubectl delete secret keyfordevenv 
+  - kubectl create secret docker-registry keyfordevenv --docker-server="$DOCKER_SERVER" --docker-username="$DOCKER_USERNAME" --docker-password="$DOCKER_PASSWORD" --docker-email="$DOCKER_EMAIL"
+  - kubectl get secret
+  - kubectl delete deployment aw-deployment 
+ # - kubectl delete svc askwin-service
+ # - kubectl delete ingress askwin-dev
+  - kubectl apply -f load-balancing/deployment-demo.yml
+  only:
+  - master
+
