@@ -46,7 +46,7 @@ deploy_to_google_demo:
   - kubectl delete secret keyfordevenv 
   - kubectl create secret docker-registry keyfordevenv --docker-server="$DOCKER_SERVER" --docker-username="$DOCKER_USERNAME" --docker-password="$DOCKER_PASSWORD" --docker-email="$DOCKER_EMAIL"
   - kubectl get secret
-  - kubectl delete deployment aw-deployment 
+ # - kubectl delete deployment askwin-backend 
  # - kubectl delete svc askwin-service
  # - kubectl delete ingress askwin-dev
   - kubectl apply -f load-balancing/deployment-demo.yml
