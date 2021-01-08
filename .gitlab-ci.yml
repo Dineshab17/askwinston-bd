@@ -43,7 +43,7 @@ deploy_to_google_demo:
   - gcloud config set compute/zone northamerica-northeast1-c
   - gcloud container clusters get-credentials aw-dev --zone northamerica-northeast1-c
   - gcloud components install kubectl
-  - kubectl delete secret keyfordevenv 
+ # - kubectl delete secret keyfordevenv 
   - kubectl create secret docker-registry keyfordevenv --docker-server="$DOCKER_SERVER" --docker-username="$DOCKER_USERNAME" --docker-password="$DOCKER_PASSWORD" --docker-email="$DOCKER_EMAIL"
   - kubectl get secret
  # - kubectl delete deployment askwin-backend 
