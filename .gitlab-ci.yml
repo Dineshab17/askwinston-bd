@@ -37,6 +37,7 @@ deploy_to_google_demo:
   # Authenticate with GKE
   # - echo "$SERVICE_ACCOUNT_KEY" > key.json
   # - cat key.json
+  - echo $DOCKER_SERVER
   - gcloud auth activate-service-account --key-file=key.json
   - gcloud config set project askwinston-251209
   - gcloud config set container/cluster aw-dev
