@@ -16,6 +16,7 @@ spec:
       - image: registry.gitlab.com/xyhealth/askwinston-bd:demo
         imagePullPolicy: Always
         name: askwin-backend
+        args: ["--spring.profiles.active=demo"]
       restartPolicy: Always
       imagePullSecrets:
       - name: keyfordevenv
