@@ -44,11 +44,11 @@ deploy_to_google_demo:
   - gcloud config set compute/zone northamerica-northeast1-c
   - gcloud container clusters get-credentials aw-dev --zone northamerica-northeast1-c
   - gcloud components install kubectl
- # - kubectl delete secret keyfordevenv 
+  - kubectl delete secret keyforbackend 
   - kubectl create secret docker-registry keyforbackend --docker-server=registry.gitlab.com --docker-username=vveerasa --docker-password=Deck2021#    --docker-email=vijayram@askwinston.ca
 #  - kubectl create secret docker-registry keyforbackend --docker-server="$DOCKER_SERVER" --docker-username=vveerasa --docker-password="$DOCKER_PASSWORD" --docker-email="$DOCKER_EMAIL"
   - kubectl get secret
- # - kubectl delete deployment askwin-backend 
+  - kubectl delete deployment askwin-backend 
  # - kubectl delete svc askwin-service
  # - kubectl delete ingress askwin-dev
   - kubectl apply -f load-balancing/deployment-demo.yml
