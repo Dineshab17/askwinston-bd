@@ -153,12 +153,18 @@
 			<version>1.8.10.2</version>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>com.moneris</groupId>-->
+<!--			<artifactId>moneris</artifactId>-->
+<!--			<version>1.0</version>-->
+<!--			<scope>system</scope>-->
+<!--			<systemPath>${project.basedir}/src/main/resources/moneris/JavaAPI.jar</systemPath>-->
+<!--		</dependency>-->
+
 		<dependency>
 			<groupId>com.moneris</groupId>
 			<artifactId>moneris</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/moneris/JavaAPI.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -209,6 +215,29 @@
 						</ports>
 					</container>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
+				<executions>
+					<execution>
+						<id>install-external</id>
+						<phase>clean</phase>
+						<configuration>
+							<file>${project.basedir}/src/main/resources/moneris/JavaAPI.jar</file>
+							<repositoryLayout>default</repositoryLayout>
+							<groupId>com.moneris</groupId>
+							<artifactId>moneris</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
