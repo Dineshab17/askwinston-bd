@@ -21,35 +21,17 @@ spec:
       imagePullSecrets:
       - name: keyfordevenv
 
-# ---
-# apiVersion: cloud.google.com/v1beta1
-# kind: BackendConfig
-# metadata:
-#   name: aw-dev-backendconfig
-# spec:
-#   timeoutSec: 120
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: aw-service
-#   annotations:
-#     beta.cloud.google.com/backend-config: '{"ports": {"80":"aw-dev-backendconfig"}}'
-# spec:
-#   type: NodePort
-#   selector:
-#     application: aw
-#   ports:
-#     - port: 80
-#       targetPort: 8080
-# ---
-# apiVersion: extensions/v1beta1
-# kind: Ingress
-# metadata:
-#   name: aw-ingress
-#   annotations:
-#     kubernetes.io/ingress.global-static-ip-name: askwin-dev-static-pb
-# spec:
-#   backend:
-#     serviceName: aw-service
-#     servicePort: 80
+---
+apiVersion: v1
+kind: askwin-backend-Service
+metadata:
+  name: askwin-backend
+  namespace: default
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    run: askwin-backend
+  type: NodePort
