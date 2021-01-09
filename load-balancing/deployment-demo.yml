@@ -23,7 +23,7 @@ spec:
 
 ---
 apiVersion: v1
-kind: askwin-backend-Service
+kind: Service
 metadata:
   name: askwin-backend
   namespace: default
