@@ -55,7 +55,7 @@ deploy_to_google_demo:
  # - kubectl delete ingress askwin-dev
   - kubectl apply -f load-balancing/deployment-demo.yml
   only:
-  - master
+  - develop
 
 docker-build-alpha:
   stage: package
