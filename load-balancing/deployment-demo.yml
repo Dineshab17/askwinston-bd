@@ -60,5 +60,5 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: askwin-api-dev
 spec:
   backend:
-    serviceName: askwin-backend
+    serviceName: askwin-backend-dev
     servicePort: 8081
