@@ -18,9 +18,11 @@ spec:
         name: askwin-backend
         args: ["--spring.profiles.active=demo"]
         livenessProbe:
-         httpGet:
-           path: /actuator
-           port: 8081
+          httpGet:
+            path: /actuator
+            port: 8081
+          initialDelaySeconds: 40
+          periodSeconds: 40       
       restartPolicy: Always
       imagePullSecrets:
       - name: keyfordevenv
