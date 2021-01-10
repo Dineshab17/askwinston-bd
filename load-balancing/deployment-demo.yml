@@ -41,10 +41,10 @@ kind: Service
 metadata:
   name: askwin-backend-dev
   namespace: default
+  annotations:
+    beta.cloud.google.com/backend-config: '{"ports": {"8081":"aw-dev-backendconfig"}}'  
   labels:
     run: backend  
-    annotations:
-      beta.cloud.google.com/backend-config: '{"ports": {"80":"aw-dev-backendconfig"}}'
 spec:
   ports:
     - port: 8081
