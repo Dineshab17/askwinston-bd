@@ -21,7 +21,7 @@ maven-build:
     paths:
       - target/*.jar
   only:
-  - develop
+  - master
 
 docker-build:
   stage: package
@@ -30,7 +30,7 @@ docker-build:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   - docker push "$CI_REGISTRY_IMAGE":demo
   only:
-  - develop
+  - master
 
 deploy_to_google_demo:
   image: 'google/cloud-sdk:alpine'
@@ -50,12 +50,12 @@ deploy_to_google_demo:
   - kubectl create secret docker-registry keyforbackend --docker-server=registry.gitlab.com --docker-username=vveerasa --docker-password=Deck2021#    --docker-email=vijayram@askwinston.ca
   # - kubectl create secret docker-registry keyforbackend --docker-server="$DOCKER_SERVER" --docker-username=vveerasa --docker-password="$DOCKER_PASSWORD" --docker-email="$DOCKER_EMAIL"
   - kubectl get secret
-  - kubectl delete deployment --ignore-not-found=true askwin-backend 
+  - kubectl delete deployment --ignore-not-found=true askwin-backend-dev 
  # - kubectl delete svc askwin-service
  # - kubectl delete ingress askwin-dev
   - kubectl apply -f load-balancing/deployment-demo.yml
   only:
-  - develop
+  - master
 
 docker-build-alpha:
   stage: package
