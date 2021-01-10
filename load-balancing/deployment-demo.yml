@@ -44,7 +44,7 @@ metadata:
   labels:
     run: backend  
     annotations:
-      beta.cloud.google.com/backend-config: '{"ports": {"8081":"aw-dev-backendconfig"}}'  
+      beta.cloud.google.com/backend-config: '{"ports": {"80":"aw-dev-backendconfig"}}'
 spec:
   ports:
     - port: 8081
