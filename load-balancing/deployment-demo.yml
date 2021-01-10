@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: askwin-backend
+  name: askwin-backend-dev
   namespace: default
 spec:
   selector:
     matchLabels:
-      application: askwin-backend
+      run: backend
   template:
     metadata:
       labels:
-        application: askwin-backend
+        run: backend
     spec:
       containers:
       - image: registry.gitlab.com/xyhealth/askwinston-bd:demo
@@ -29,9 +29,9 @@ metadata:
   namespace: default
 spec:
   ports:
-    - port: 8080
+    - port: 8081
       protocol: TCP
-      targetPort: 8080
+      targetPort: 8081
   selector:
-    run: askwin-backend
+    run: backend
   type: NodePort
