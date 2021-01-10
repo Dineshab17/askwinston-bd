@@ -21,7 +21,7 @@ maven-build:
     paths:
       - target/*.jar
   only:
-  - develop
+  - master
 
 docker-build:
   stage: package
@@ -30,7 +30,7 @@ docker-build:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   - docker push "$CI_REGISTRY_IMAGE":demo
   only:
-  - develop
+  - master
 
 deploy_to_google_demo:
   image: 'google/cloud-sdk:alpine'
@@ -55,7 +55,7 @@ deploy_to_google_demo:
  # - kubectl delete ingress askwin-dev
   - kubectl apply -f load-balancing/deployment-demo.yml
   only:
-  - develop
+  - master
 
 docker-build-alpha:
   stage: package
