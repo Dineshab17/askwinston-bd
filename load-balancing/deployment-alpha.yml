@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: askwin-backend-alpha
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      run: backend
+  template:
+    metadata:
+      labels:
+        run: backend
+    spec:
+      containers:
+      - image: registry.gitlab.com/xyhealth/askwinston-bd:alpha
+        imagePullPolicy: Always
+        name: askwin-backend
+        args: ["--spring.profiles.active=alpha"]
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: keyforbackendalpha
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: askwin-backend-service
+  namespace: default
+spec:
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    run: backend
+  type: NodePort
