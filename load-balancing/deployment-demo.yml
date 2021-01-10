@@ -62,5 +62,3 @@ spec:
   backend:
     serviceName: askwin-backend
     servicePort: 8081
-  selector:
-    run: backend
