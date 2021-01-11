@@ -24,18 +24,18 @@ import java.math.RoundingMode;
 public class MonerisPaymentServiceImpl implements PaymentService {
 
     @Value("${moneris.test-mode:true}")
-    private boolean TEST_MODE;
+    private boolean testMode;
 
     @Value("${moneris.country-code:CA}")
-    private String COUNTRY_CODE;
+    private String countryCode;
 
     @Value("${moneris.store-id}")
-    private String STORE_ID;
+    private String storeId;
 
     @Value("${moneris.api-token}")
-    private String API_TOKEN;
+    private String apiToken;
 
-    private String E_COMMERCE_INDICATOR = "5";
+    private String eCommerceIndicator = "5";
 
     private BillingCardRepository billingCardRepository;
     private UserRepository userRepository;
@@ -53,7 +53,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "Authenticated user does not have a record"));
         ResAddToken resAddToken = new ResAddToken();
         resAddToken.setDataKey(dto.getToken());
-        resAddToken.setCryptType(E_COMMERCE_INDICATOR); //Don't know what it is
+        resAddToken.setCryptType(eCommerceIndicator); //Don't know what it is
         resAddToken.setCustId(user.getFirstName() + " " + user.getLastName());
         resAddToken.setEmail(user.getEmail());
         resAddToken.setPhone(user.getPhone());
@@ -94,7 +94,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         resPreauthCC.setCustId(Long.toString(card.getUser().getId()));
         String stringAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), RoundingMode.HALF_EVEN).toString();
         resPreauthCC.setAmount(stringAmount);
-        resPreauthCC.setCryptType(E_COMMERCE_INDICATOR);
+        resPreauthCC.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(resPreauthCC);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -114,7 +114,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         String stringAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), RoundingMode.HALF_EVEN).toString();
         completion.setCompAmount(stringAmount);
         completion.setTxnNumber(transactionNumber);
-        completion.setCryptType(E_COMMERCE_INDICATOR);
+        completion.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(completion);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -134,7 +134,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         refund.setOrderId(orderId);
         String stringAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), RoundingMode.HALF_EVEN).toString();
         refund.setAmount(stringAmount);
-        refund.setCryptType(E_COMMERCE_INDICATOR);
+        refund.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(refund);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -151,7 +151,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         ResCardVerificationCC resCardVerificationCC = new ResCardVerificationCC();
         resCardVerificationCC.setOrderId(card.getLast4() + System.currentTimeMillis());
         resCardVerificationCC.setDataKey(card.getId());
-        resCardVerificationCC.setCryptType(E_COMMERCE_INDICATOR);
+        resCardVerificationCC.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(resCardVerificationCC);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -166,10 +166,10 @@ public class MonerisPaymentServiceImpl implements PaymentService {
 
     private HttpsPostRequest createHttpsPostRequest(Transaction transaction) {
         HttpsPostRequest mpgReq = new HttpsPostRequest();
-        mpgReq.setProcCountryCode(COUNTRY_CODE);
-        mpgReq.setTestMode(TEST_MODE);
-        mpgReq.setStoreId(STORE_ID);
-        mpgReq.setApiToken(API_TOKEN);
+        mpgReq.setProcCountryCode(countryCode);
+        mpgReq.setTestMode(testMode);
+        mpgReq.setStoreId(storeId);
+        mpgReq.setApiToken(apiToken);
         mpgReq.setTransaction(transaction);
         mpgReq.setStatusCheck(false);
         return mpgReq;

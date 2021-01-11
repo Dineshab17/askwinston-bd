@@ -25,7 +25,7 @@ public class PromoCodeServiceImpl implements PromoCodeService {
     }
 
     @Override
-    public PromoCode getByCode(String code) throws PromoCodeException {
+    public PromoCode getByCode(String code) {
         PromoCode promoCode = promoCodeRepository.getByCode(code);
         if (promoCode == null) {
             throw new PromoCodeException("Promo code not found");
@@ -46,7 +46,7 @@ public class PromoCodeServiceImpl implements PromoCodeService {
                 !promoCodeUsed.getPurchaseOrder().getStatus().equals(PurchaseOrder.Status.REJECTED)
                         && !promoCodeUsed.getPurchaseOrder().getStatus().equals(PurchaseOrder.Status.CANCELLED)
         ).collect(Collectors.toList());
-        return activatedPromoCodes.size() != 0;
+        return !activatedPromoCodes.isEmpty();
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PromoCodeServiceImpl implements PromoCodeService {
         promoCode.setFromDate(fromDate);
         promoCode.setToDate(toDate);
         promoCode.setValue(value == null ? 0 : value);
-        List<Product.ProblemCategory> categories = category == null ? null : category.isEmpty() ? null : category;
+        List<Product.ProblemCategory> categories = (category == null || category.isEmpty()) ? null : category;
         promoCode.setProblemCategory(categories);
         promoCode.setType(type);
         return promoCodeRepository.save(promoCode);

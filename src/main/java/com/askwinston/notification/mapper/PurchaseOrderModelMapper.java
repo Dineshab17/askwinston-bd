@@ -140,7 +140,14 @@ public class PurchaseOrderModelMapper implements EntityModelMapper<PurchaseOrder
     private String formatLongPrice(Long price) {
         String orderPriceString = price.toString();
         StringBuilder priceStringBuilder = new StringBuilder("$");
-        int offset = orderPriceString.length() > 3 ? 2 : orderPriceString.length() > 2 ? 1 : 0;
+        int offset;
+        if(orderPriceString.length() > 3){
+            offset = 2;
+        }else if(orderPriceString.length() > 2){
+            offset = 1;
+        }else {
+            offset = 0;
+        }
         if (offset > 0) {
             priceStringBuilder.append(orderPriceString, 0, orderPriceString.length() - offset);
             priceStringBuilder.append(".");

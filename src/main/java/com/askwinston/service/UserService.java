@@ -1,6 +1,5 @@
 package com.askwinston.service;
 
-import com.askwinston.exception.UserException;
 import com.askwinston.model.BillingCard;
 import com.askwinston.model.ShippingAddress;
 import com.askwinston.model.User;

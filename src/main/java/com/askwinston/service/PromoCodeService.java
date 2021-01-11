@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PromoCodeService {
-    PromoCode getByCode(String code) throws PromoCodeException;
+    PromoCode getByCode(String code);
 
     boolean isPromoCodeUsedByPatient(User patient, PromoCode promoCode);
 

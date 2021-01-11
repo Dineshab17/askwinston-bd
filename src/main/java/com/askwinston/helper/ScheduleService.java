@@ -19,7 +19,7 @@ import java.util.PriorityQueue;
 @Slf4j
 public class ScheduleService {
 
-    private final static long FIXED_RATE_IN_MILLISECONDS = 1000L * 60L;
+    private static final long FIXED_RATE_IN_MILLISECONDS = 1000L * 60L;
 
     @Data
     @AllArgsConstructor

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final int MIN_PASSWORD_LENGTH = 6;
+    private static final int MIN_PASSWORD_LENGTH = 6;
 
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
                 .findAny();
         if (cardOptional.isPresent()) {
             BillingCard card = cardOptional.get();
-            if (card.getIsValid()) {
+            if (Boolean.TRUE.equals(card.getIsValid())) {
                 resetPrimaryBillingCards(userId);
                 card.setPrimary(true);
                 billingCardRepository.save(card);
@@ -321,7 +321,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendResetPasswordEmail(String email) throws UserException {
+    public void sendResetPasswordEmail(String email) {
         List<User> users = userRepository.findByEmail(email);
         if (users.isEmpty()) {
             throw new UserException("Your email address may not be associated with an account, please try again.");

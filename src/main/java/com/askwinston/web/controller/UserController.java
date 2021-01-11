@@ -32,7 +32,7 @@ public class UserController {
     private JwtService jwtService;
 
     @Value("${askwinston.token.reset-password.expire-in-seconds}")
-    private int RESET_PASSWORD_TOKEN_EXPIRATION_SECONDS;
+    private int resetPasswordTokenExpirationSeconds;
 
     public UserController(UserService userService, ParsingHelper parsingHelper, TokenService tokenService,
                           JwtService jwtService) {
@@ -92,7 +92,7 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
         if (token.getCreationDate()
-                .before(Date.from(Instant.now().minusSeconds(RESET_PASSWORD_TOKEN_EXPIRATION_SECONDS)))) {
+                .before(Date.from(Instant.now().minusSeconds(resetPasswordTokenExpirationSeconds)))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
 

@@ -109,9 +109,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             slot.getSubscriptions().addAll(subscriptions);
             slot = doctorSlotRepository.save(slot);
             DoctorSlot finalSlot = slot;
-            subscriptions.forEach(s -> {
-                s.setAppointment(finalSlot);
-            });
+            subscriptions.forEach(s -> s.setAppointment(finalSlot));
             subscriptionRepository.saveAll(subscriptions);
             notificationEngine.notify(NotificationEventTypeContainer.NEW_APPOINTMENT, slot);
             slot = doctorSlotRepository.save(slot);
@@ -182,9 +180,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private List<DoctorSlot> saveDoctorSlots(User doctor, List<DoctorSlot> slots) {
         Set<LocalDate> dateSet = new HashSet<>();
-        slots.forEach(slot -> {
-            dateSet.add(slot.getDate());
-        });
+        slots.forEach(slot -> dateSet.add(slot.getDate()));
         List<LocalDate> dates = dateSet.stream()
                 .sorted(LocalDate::compareTo)
                 .collect(Collectors.toList());
@@ -217,7 +213,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<LocalDate> dates = dateSet.stream()
                 .sorted(LocalDate::compareTo)
                 .collect(Collectors.toList());
-        dates.forEach(date -> {
+        dates.forEach(date ->
             intervals.stream()
                     .filter(interval -> interval.getStart().toLocalDate().equals(date))
                     .forEach(interval -> {
@@ -227,8 +223,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                         scheduleInterval.setEnd(interval.getEnd().toLocalTime());
                         scheduleInterval.setScheduleScheme(scheduleScheme);
                         scheduleScheme.getIntervals().add(scheduleInterval);
-                    });
-        });
+                    })
+        );
         oldScheduleScheme.ifPresent(scheme -> deleteScheduleScheme(scheme, startDate));
         return scheduleSchemeRepository.save(scheduleScheme);
     }

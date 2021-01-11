@@ -17,6 +17,7 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.openhtmltopdf.slf4j.Slf4jLogger;
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer;
 import com.openhtmltopdf.util.XRLog;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -26,6 +27,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
@@ -188,6 +190,7 @@ public class OrderEngine {
         purchaseOrderRepository.save(order);
     }
 
+    @SneakyThrows
     public byte[] generatePrescriptionPdf(long orderId) {
         try {
             PurchaseOrder order = getById(orderId);
@@ -210,9 +213,9 @@ public class OrderEngine {
             builder.run();
 
             return baos.toByteArray();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("PDF generation failed", e);
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 

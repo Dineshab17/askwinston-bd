@@ -5,8 +5,6 @@ import com.askwinston.model.Document;
 import com.askwinston.model.DocumentResource;
 import com.askwinston.repository.DocumentRepository;
 import com.askwinston.service.DocumentStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

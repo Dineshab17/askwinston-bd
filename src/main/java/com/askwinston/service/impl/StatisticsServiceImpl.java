@@ -46,7 +46,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public byte[] generateShippedOrdersReportXLSX(LocalDate from, LocalDate to) {
-        Workbook book = new XSSFWorkbook();
+        try(Workbook book = new XSSFWorkbook()){
         Sheet sheet = book.createSheet("Shipped orders report");
         final int[] rows = {0};
         Row row = sheet.createRow(rows[0]++);
@@ -90,7 +90,6 @@ public class StatisticsServiceImpl implements StatisticsService {
             row1.createCell(16).setCellValue(r.getPromoCode());
         });
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
             book.write(outputStream);
             return outputStream.toByteArray();
         } catch (IOException e) {
@@ -101,7 +100,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public byte[] generateNewUsersReportXLSX() {
-        Workbook book = new XSSFWorkbook();
+        try(Workbook book = new XSSFWorkbook()){
         Sheet sheet = book.createSheet("Users without orders report");
         final int[] rows = {0};
         Row row = sheet.createRow(rows[0]++);
@@ -120,7 +119,6 @@ public class StatisticsServiceImpl implements StatisticsService {
             row1.createCell(4).setCellValue(r.getRegistrationDate());
         });
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
             book.write(outputStream);
             return outputStream.toByteArray();
         } catch (IOException e) {

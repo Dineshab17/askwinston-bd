@@ -89,9 +89,7 @@ public class ScheduleController {
         DoctorSlot slot;
         if (bookSlotDto.getSubscriptionId() != null && !bookSlotDto.getSubscriptionId().isEmpty()) {
             List<ProductSubscription> subscriptions = new ArrayList<>();
-            bookSlotDto.getSubscriptionId().forEach(id -> {
-                subscriptions.add(subscriptionEngine.getById(id));
-            });
+            bookSlotDto.getSubscriptionId().forEach(id -> subscriptions.add(subscriptionEngine.getById(id)));
             slot = scheduleService.bookAnAppointment(bookSlotDto.getSlotId(), patient, subscriptions);
         } else {
             slot = scheduleService.bookAnAppointment(bookSlotDto.getSlotId(), patient);
