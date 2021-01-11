@@ -21,7 +21,9 @@ maven-build:
     paths:
       - target/*.jar
   only:
-  - develop, alpha, master
+  - develop
+  - alpha
+  - master
 
 docker-build:
   stage: package
