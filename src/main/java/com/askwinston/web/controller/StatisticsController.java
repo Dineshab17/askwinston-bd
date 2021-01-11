@@ -25,12 +25,22 @@ public class StatisticsController {
         this.statisticsService = statisticsService;
     }
 
+    /**
+     * @param from
+     * @param to
+     * @return ResponseEntity<InputStreamResource>
+     * To generate and download shipped order details
+     */
     @GetMapping("/shipped")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<InputStreamResource> getShippedOrdersReport(@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate from, @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate to) {
         return HttpHelper.fileDownload(new DocumentResource("Shipped_orders_report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", statisticsService.generateShippedOrdersReportXLSX(from, to)));
     }
 
+    /**
+     * @return ResponseEntity<InputStreamResource>
+     * To generate and download newly registered user
+     */
     @GetMapping("/new-users")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<InputStreamResource> getNewUsersReport() {

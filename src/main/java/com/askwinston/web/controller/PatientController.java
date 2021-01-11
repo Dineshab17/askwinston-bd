@@ -13,6 +13,7 @@ import com.askwinston.web.dto.*;
 import com.askwinston.web.secuity.AwUserPrincipal;
 import com.askwinston.web.secuity.JwtService;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/patient")
+@Slf4j
 public class PatientController {
     private final UserService userService;
     private JwtService jwtService;
@@ -48,9 +50,15 @@ public class PatientController {
         this.paymentService = paymentService;
     }
 
+    /**
+     * @param userDto
+     * @return TokenDto
+     * To create or register a new patient
+     */
     @PostMapping
     public TokenDto create(@Validated(UserDto.CreatePatientValidation.class) @RequestBody UserDto userDto) {
         if (userService.userEmailExists(userDto.getEmail())) {
+            log.error("Patient is already registered with this email {}", userDto.getEmail());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already registered");
         }
         User newUser = userService.create(parsingHelper.mapObject(userDto, User.class));
@@ -59,6 +67,12 @@ public class PatientController {
         return new TokenDto(token, userDto);
     }
 
+    /**
+     * @param shippingAddressDto
+     * @param principal
+     * @return ShippingAddressDto
+     * To create new shipping address for the patient
+     */
     @PostMapping("/shipping-address")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -67,9 +81,16 @@ public class PatientController {
         User user = userService.getById(principal.getId());
         ShippingAddress newShippingAddress = userService.createShippingAddress(user,
                 parsingHelper.mapObject(shippingAddressDto, ShippingAddress.class));
+        log.info("New Shipping Address created for the user with id{}", principal.getId());
         return parsingHelper.mapObject(newShippingAddress, ShippingAddressDto.class);
     }
 
+    /**
+     * @param shippingAddressDto
+     * @param principal
+     * @return ShippingAddressDto
+     * To update existing shipping address of the patient
+     */
     @PutMapping("/shipping-address")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -78,9 +99,15 @@ public class PatientController {
         User user = userService.getById(principal.getId());
         ShippingAddress newShippingAddress = userService.updateShippingAddress(user,
                 parsingHelper.mapObject(shippingAddressDto, ShippingAddress.class));
+        log.info("Shipping Address is updated for the patient {}", principal.getId());
         return parsingHelper.mapObject(newShippingAddress, ShippingAddressDto.class);
     }
 
+    /**
+     * @param id
+     * @param principal
+     * To delete provided shipping address of the patient
+     */
     @DeleteMapping("/shipping-address/{id}")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public void deleteShippingAddress(@PathVariable("id") Long id, @AuthenticationPrincipal AwUserPrincipal principal) {
@@ -91,6 +118,12 @@ public class PatientController {
         userService.deleteShippingAddress(id);
     }
 
+    /**
+     * @param id
+     * @param principal
+     * @return List<ShippingAddressDto>
+     * To set selected shipping address as primary Shipping Address
+     */
     @PutMapping("/shipping-address/primary/{id}")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public List<ShippingAddressDto> setPrimaryShippingAddress(@PathVariable("id") long id,
@@ -99,6 +132,12 @@ public class PatientController {
         return parsingHelper.mapObjects(addresses, ShippingAddressDto.class);
     }
 
+    /**
+     * @param userDto
+     * @param principal
+     * @return UserDto
+     * To update profile of the patient
+     */
     @PutMapping("/profile")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -110,6 +149,13 @@ public class PatientController {
         return parsingHelper.mapObject(updatedUser, UserDto.class);
     }
 
+    /**
+     * @param principal
+     * @param file
+     * @return Long
+     * @throws IOException
+     * To upload Id proof document of the patient
+     */
     @PutMapping(value = "/upload/id", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public Long uploadId(@AuthenticationPrincipal AwUserPrincipal principal,
@@ -118,6 +164,13 @@ public class PatientController {
         return document.getId();
     }
 
+    /**
+     * @param principal
+     * @param file
+     * @return Long
+     * @throws IOException
+     * To upload Insurance document of the patient
+     */
     @PutMapping(value = "/upload/insurance", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public Long uploadInsurance(@AuthenticationPrincipal AwUserPrincipal principal,
@@ -126,6 +179,12 @@ public class PatientController {
         return document.getId();
     }
 
+    /**
+     * @param billingCardDto
+     * @param principal
+     * @return BillingCardDto
+     * To create new billing card information for the patient
+     */
     @PostMapping("/billing-card")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public BillingCardDto createBillingCard(@RequestBody BillingCardDto billingCardDto,
@@ -140,6 +199,12 @@ public class PatientController {
         return parsingHelper.mapObject(newBillingCard, BillingCardDto.class);
     }
 
+    /**
+     * @param id
+     * @param principal
+     * @return List<BillingCardDto>
+     * To set provided billing card as primary for the patient
+     */
     @PutMapping("/billing-card/primary/{id}")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public List<BillingCardDto> setPrimaryBillingCard(@PathVariable("id") String id,
@@ -148,12 +213,21 @@ public class PatientController {
         return parsingHelper.mapObjects(cards, BillingCardDto.class);
     }
 
+    /**
+     * @param id
+     * @param principal
+     * To delete selected billing card for the patient
+     */
     @DeleteMapping("/billing-card/{id}")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public void deleteBillingCard(@PathVariable("id") String id, @AuthenticationPrincipal AwUserPrincipal principal) {
         userService.deleteBillingCard(principal.getId(), id);
     }
 
+    /**
+     * @return List<UserDto>
+     * Get all the patient information
+     */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('DOCTOR', 'PHARMACIST')")
     @JsonView(DtoView.DoctorVisibility.class)
@@ -162,6 +236,10 @@ public class PatientController {
         return parsingHelper.mapObjects(users, UserDto.class);
     }
 
+    /**
+     * @return List<UserDto>
+     * To get patients information by admin
+     */
     @GetMapping("/admin")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @JsonView(DtoView.AdminVisibility.class)

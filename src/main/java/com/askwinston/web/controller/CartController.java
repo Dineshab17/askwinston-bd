@@ -27,6 +27,11 @@ public class CartController {
         this.parsingHelper = parsingHelper;
     }
 
+    /**
+     * @param principal
+     * @return CartDto
+     * To get items in the cart of the patient
+     */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -34,6 +39,12 @@ public class CartController {
         return parsingHelper.mapObject(cartService.getCartForUser(principal.getId()), CartDto.class);
     }
 
+    /**
+     * @param cartItemDtoList
+     * @param principal
+     * @return CartDto
+     * To update items in the cart for the patient
+     */
     @PutMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -44,6 +55,12 @@ public class CartController {
         return parsingHelper.mapObject(updatedCart, CartDto.class);
     }
 
+    /**
+     * @param cartItemDto
+     * @param principal
+     * @return CartDto
+     * To delete particular item from cart for patient
+     */
     @DeleteMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -54,6 +71,11 @@ public class CartController {
         return parsingHelper.mapObject(updatedCart, CartDto.class);
     }
 
+    /**
+     * @param principal
+     * @return CartDto
+     * To Clear all items in the cart for the patient
+     */
     @PostMapping("/clear")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)

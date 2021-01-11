@@ -6,6 +6,7 @@ import com.askwinston.repository.UserRepository;
 import com.askwinston.web.dto.TokenDto;
 import com.askwinston.web.dto.UserDto;
 import com.askwinston.web.secuity.JwtService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -34,8 +36,15 @@ public class AuthController {
     }
 
 
+    /**
+     * @param userDto
+     * @return TokenDto
+     * To authenticate the user's information like username and password
+     * and allow the user to access the application
+     */
     @PostMapping("/login")
     public TokenDto login(@RequestBody UserDto userDto) {
+        log.info("Searching for a user {} ", userDto.getEmail());
         List<User> users = userRepository.findByEmail(userDto.getEmail());
         if (!users.isEmpty()) {
             User user = users.get(0);
@@ -45,6 +54,7 @@ public class AuthController {
                 return new TokenDto(token, userDto);
             }
         }
+        log.error("Unauthorized User {} ", userDto.getEmail());
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 }

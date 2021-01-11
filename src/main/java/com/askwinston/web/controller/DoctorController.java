@@ -26,6 +26,12 @@ public class DoctorController {
         this.parsingHelper = parsingHelper;
     }
 
+    /**
+     * @param userDto
+     * @param principal
+     * @return UserDto
+     * To update profile information of the doctor
+     */
     @PutMapping("/profile")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
     @JsonView(DtoView.PatientVisibility.class)

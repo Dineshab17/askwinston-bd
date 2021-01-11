@@ -1,6 +1,5 @@
 package com.askwinston.service;
 
-import com.askwinston.exception.PromoCodeException;
 import com.askwinston.model.Product;
 import com.askwinston.model.PromoCode;
 import com.askwinston.model.PurchaseOrder;

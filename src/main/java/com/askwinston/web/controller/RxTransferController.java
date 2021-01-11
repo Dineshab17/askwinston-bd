@@ -19,6 +19,12 @@ public class RxTransferController {
         this.rxTransferService = rxTransferService;
     }
 
+    /**
+     * @param dto
+     * @param principal
+     * @return RxTransferStateRecordDto
+     * To save prescription state of the patient
+     */
     @PutMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
