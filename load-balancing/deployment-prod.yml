@@ -39,11 +39,11 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: askwin-backend-ingress-prod
+  name: askwin-api-ingress-prod
   labels:
     run: backend
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: askwin-backend-prod
+    kubernetes.io/ingress.global-static-ip-name: askwin-api-prod
 spec:
   backend:
     serviceName: askwin-backend-prod
