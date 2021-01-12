@@ -25,7 +25,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: askwin-backend-service
+  name: askwin-backend-alpha
   namespace: default
 spec:
   ports:
@@ -35,3 +35,17 @@ spec:
   selector:
     run: backend
   type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: askwin-api-ingress-alpha
+  labels:
+    run: backend  
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: askwin-api-alpha
+spec:
+  backend:
+    serviceName: askwin-backend-alpha
+    servicePort: 8081
+
