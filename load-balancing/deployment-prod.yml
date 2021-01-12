@@ -39,7 +39,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: askwin-api-ingress-prod
+  name: askwin-backend-ingress-prod
   labels:
     run: backend
   annotations:
