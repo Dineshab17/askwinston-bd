@@ -66,15 +66,12 @@ docker-build-alpha:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   - docker push "$CI_REGISTRY_IMAGE":alpha
   only:
-  - master
+  - alpha
 
 deploy_to_google_alpha:
   image: 'google/cloud-sdk:alpine'
   stage: deploy
   script:
-  # Authenticate with GKE
-  # - echo "$SERVICE_ACCOUNT_KEY" > key.json
-  # - cat key.json
   - echo $DOCKER_SERVER
   - gcloud auth activate-service-account --key-file=key.json
   - gcloud config set project askwinston-251209
@@ -84,12 +81,36 @@ deploy_to_google_alpha:
   - gcloud components install kubectl
   - kubectl delete secret --ignore-not-found=true keyforbackendalpha 
   - kubectl create secret docker-registry keyforbackendalpha --docker-server=registry.gitlab.com --docker-username=vveerasa --docker-password=Deck2021# --docker-email=vijayram@askwinston.ca
-  # - kubectl create secret docker-registry keyforbackend --docker-server="$DOCKER_SERVER" --docker-username=vveerasa --docker-password="$DOCKER_PASSWORD" --docker-email="$DOCKER_EMAIL"
   - kubectl get secret
-  - kubectl delete deployment --ignore-not-found=true askwin-backend-alpha 
- # - kubectl delete svc askwin-service
- # - kubectl delete ingress askwin-dev
+  - kubectl delete deployment --ignore-not-found=true askwin-backend-alpha
   - kubectl apply -f load-balancing/deployment-alpha.yml
   only:
-  - master
+  - alpha
 
+docker-build-prod:
+  stage: package
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE":prod .
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker push "$CI_REGISTRY_IMAGE":prod
+  only:
+    - master
+
+deploy_to_google_prod:
+  image: 'google/cloud-sdk:alpine'
+  stage: deploy
+  script:
+    - echo $DOCKER_SERVER
+    - gcloud auth activate-service-account --key-file=key.json
+    - gcloud config set project askwinston-251209
+    - gcloud config set container/cluster aw-prod
+    - gcloud config set compute/zone northamerica-northeast1-a
+    - gcloud container clusters get-credentials aw-prod --zone northamerica-northeast1-a
+    - gcloud components install kubectl
+    - kubectl delete secret --ignore-not-found=true keyforbackendprod
+    - kubectl create secret docker-registry keyforbackendprod --docker-server=registry.gitlab.com --docker-username=vveerasa --docker-password=Deck2021# --docker-email=vijayram@askwinston.ca
+    - kubectl get secret
+    - kubectl delete deployment --ignore-not-found=true askwin-backend-prod
+    - kubectl apply -f load-balancing/deployment-prod.yml
+  only:
+    - master
