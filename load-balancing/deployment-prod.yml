@@ -43,7 +43,7 @@ metadata:
   labels:
     run: backend
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: askwin-api-prod
+    kubernetes.io/ingress.global-static-ip-name: askwin-backend-prod
 spec:
   backend:
     serviceName: askwin-backend-prod
