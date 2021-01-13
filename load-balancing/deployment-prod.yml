@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: askwin-backend-alpha
+  name: askwin-backend-prod
   namespace: default
 spec:
   selector:
@@ -13,19 +13,19 @@ spec:
         run: backend
     spec:
       containers:
-      - image: registry.gitlab.com/xyhealth/askwinston-bd:alpha
-        imagePullPolicy: Always
-        name: askwin-backend
-        args: ["--spring.profiles.active=alpha"]
+        - image: registry.gitlab.com/xyhealth/askwinston-bd:prod
+          imagePullPolicy: Always
+          name: askwin-backend
+          args: ["--spring.profiles.active=prod"]
       restartPolicy: Always
       imagePullSecrets:
-      - name: keyforbackendalpha
+        - name: keyforbackendprod
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: askwin-backend-alpha
+  name: askwin-backend-prod
   namespace: default
 spec:
   ports:
@@ -39,13 +39,13 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: askwin-api-ingress-alpha
+  name: askwin-api-ingress-prod
   labels:
-    run: backend  
+    run: backend
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: askwin-api-alpha
+    kubernetes.io/ingress.global-static-ip-name: askwin-api-prod
 spec:
   backend:
-    serviceName: askwin-backend-alpha
+    serviceName: askwin-backend-prod
     servicePort: 8081
 
