@@ -21,7 +21,7 @@ maven-build:
     paths:
       - target/*.jar
   only:
-  - develop
+  - master
   - alpha
   - master
 
@@ -32,7 +32,7 @@ docker-build:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   - docker push "$CI_REGISTRY_IMAGE":demo
   only:
-  - develop
+  - master
 
 deploy_to_google_demo:
   image: 'google/cloud-sdk:alpine'
@@ -42,7 +42,7 @@ deploy_to_google_demo:
   # - echo "$SERVICE_ACCOUNT_KEY" > key.json
   # - cat key.json
   - echo $DOCKER_SERVER
-  - gcloud auth activate-service-account --key-file=key.json
+  - gcloud auth activate-service-account --project=askwinston-251209 --key-file=key.json
   - gcloud config set project askwinston-251209
   - gcloud config set container/cluster aw-dev
   - gcloud config set compute/zone northamerica-northeast1-c
