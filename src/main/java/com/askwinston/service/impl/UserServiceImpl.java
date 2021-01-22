@@ -15,6 +15,7 @@ import com.askwinston.service.EmailService;
 import com.askwinston.service.TokenService;
 import com.askwinston.service.UserService;
 import com.askwinston.subscription.ProductSubscriptionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private static final int MIN_PASSWORD_LENGTH = 6;
@@ -60,11 +62,21 @@ public class UserServiceImpl implements UserService {
         this.subscriptionRepository = subscriptionRepository;
     }
 
+    /**
+     * @param email
+     * @return boolean
+     * To check whether the email id of the user is already exists
+     */
     @Override
     public boolean userEmailExists(String email) {
         return !userRepository.findByEmail(email).isEmpty();
     }
 
+    /**
+     * @param id
+     * @return User
+     * To get the user details by user id
+     */
     @Override
     public User getById(Long id) {
         return userRepository.findById(id).orElseThrow(
@@ -72,6 +84,11 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    /**
+     * @param user
+     * @return User
+     * To create a new user
+     */
     @Override
     public User create(User user) {
         Cart cart = new Cart();
@@ -95,10 +112,16 @@ public class UserServiceImpl implements UserService {
         newPatient = userRepository.save(newPatient);
 
         notificationEngine.notify(NotificationEventTypeContainer.REGISTRATION, newPatient);
-
+        log.info("New User created with user id: {}", newPatient.getId());
         return newPatient;
     }
 
+    /**
+     * @param user
+     * @param shippingAddress
+     * @return ShippingAddress
+     * To create new shipping address for the patient
+     */
     @Override
     public ShippingAddress createShippingAddress(User user, ShippingAddress shippingAddress) {
         boolean isPrimary = false;
@@ -118,12 +141,19 @@ public class UserServiceImpl implements UserService {
         return shippingAddressRepository.save(newShippingAddress);
     }
 
+    /**
+     * @param user
+     * @param dto
+     * @return ShippingAddress
+     * To update existing shipping address of the patient
+     */
     @Override
     public ShippingAddress updateShippingAddress(User user, ShippingAddress dto) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(dto.getId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Shipping address not found"));
         if (!shippingAddress.getUser().equals(user)) {
+            log.error("Provided Shipping Address is not belongs to the patient with id {}", user.getId());
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This shipping address is not yours");
         }
         if (dto.getAddressProvince() != null) {
@@ -147,17 +177,28 @@ public class UserServiceImpl implements UserService {
         return shippingAddressRepository.save(shippingAddress);
     }
 
+    /**
+     * @param id
+     * To delete provider shipping address of the patient
+     */
     @Override
     public void deleteShippingAddress(Long id) {
         ShippingAddress shippingAddress = shippingAddressRepository.findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Shipping address not found"));
         if (shippingAddress.isPrimary()) {
+            log.error("Cannot delete primary shipping with id {}", id);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot delete primary shipping address.");
         }
         shippingAddressRepository.deleteById(id);
     }
 
+    /**
+     * @param user
+     * @param billingCard
+     * @return BillingCard
+     * To add new billing card for the patient
+     */
     @Override
     public BillingCard addBillingCard(User user, BillingCard billingCard) {
         boolean isPrimary;
@@ -175,19 +216,32 @@ public class UserServiceImpl implements UserService {
         return billingCardRepository.save(billingCard);
     }
 
+    /**
+     * @param userId
+     * @param id
+     * To delete provided billing card for the patient
+     */
     @Override
     public void deleteBillingCard(Long userId, String id) {
         List<BillingCard> cards = billingCardRepository.findByUserId(userId);
         cards.forEach(card -> {
             if (card.getId().equals(id)) {
                 if (card.isPrimary()) {
+                    log.error("Can't delete primary billing card for the user with id {}", userId);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot delete primary billing card.");
                 }
                 billingCardRepository.deleteById(id);
+                log.info("Billing card with id {} deleted for the user with id {}", id, userId);
             }
         });
     }
 
+    /**
+     * @param userId
+     * @param id
+     * @return List<BillingCard>
+     * To set primary billing card for the patient
+     */
     @Transactional
     @Override
     public List<BillingCard> setPrimaryBillingCard(Long userId, String id) {
@@ -203,13 +257,19 @@ public class UserServiceImpl implements UserService {
                 billingCardRepository.save(card);
                 return cards;
             } else {
+                log.error("Card is invalid for the user with id: {}", userId);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Card is invalid. Please select another card");
             }
         } else {
+            log.error("User with id {} doesn't have billing card with id: {}", userId, id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User haven't billing card with id " + id);
         }
     }
 
+    /**
+     * @param userId
+     * To reset primary billing card of the user
+     */
     private void resetPrimaryBillingCards(Long userId) {
         List<BillingCard> cards = billingCardRepository.findByUserId(userId);
         cards.stream()
@@ -220,6 +280,10 @@ public class UserServiceImpl implements UserService {
                 });
     }
 
+    /**
+     * @param userId
+     * To reset primary shipping address of the user
+     */
     private void resetPrimaryShippingAddresses(Long userId) {
         List<ShippingAddress> addresses = shippingAddressRepository.findByUserId(userId);
         addresses.stream()
@@ -228,12 +292,20 @@ public class UserServiceImpl implements UserService {
                     address.setPrimary(false);
                     shippingAddressRepository.save(address);
                 });
+        log.info("Primary shipping address has been reset for the user with id {}", userId);
     }
 
+    /**
+     * @param userId
+     * @param id
+     * @return List<ShippingAddress>
+     * To set primary shipping address for the patient
+     */
     @Transactional
     @Override
     public List<ShippingAddress> setPrimaryShippingAddress(Long userId, long id) {
         List<ShippingAddress> addresses = shippingAddressRepository.findByUserId(userId);
+        log.info("Getting shipping address with id: {}", id);
         Optional<ShippingAddress> addressOptional = addresses.stream()
                 .filter(address -> Objects.equals(address.getId(), id))
                 .findAny();
@@ -242,36 +314,56 @@ public class UserServiceImpl implements UserService {
             ShippingAddress address = addressOptional.get();
             address.setPrimary(true);
             shippingAddressRepository.save(address);
+            log.info("Shipping Address with id {} set as primary shipping address for the patient with id {}", id, userId);
             return addresses;
         } else {
+            log.error("Patient with id {} haven't shipping address with id {}", userId, id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User haven't shipping address with id " + id);
         }
     }
 
+    /**
+     * @param userId
+     * @param oldPassword
+     * @param newPassword
+     * To change the password of the user
+     */
     @Override
     public void changePassword(Long userId, String oldPassword, String newPassword) {
         User user = getById(userId);
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            log.error("Current password is incorrect for the user with id {}", userId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong current password");
         }
         if (newPassword.length() < MIN_PASSWORD_LENGTH) {
+            log.error("New Password is too short for the user with id {}", userId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New password is too short");
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-
+        log.info("Password has been changed for the user with id {}", userId);
         notificationEngine.notify(NotificationEventTypeContainer.PASSWORD_RESET, user);
     }
 
+    /**
+     * @param userId
+     * @param newPassword
+     * To reset password of the user
+     */
     @Override
     public void resetPassword(Long userId, String newPassword) {
         User user = getById(userId);
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-
+        log.info("Password has been reset for the user with id {}", userId);
         notificationEngine.notify(NotificationEventTypeContainer.PASSWORD_RESET, user);
     }
 
+    /**
+     * @param user
+     * @return User
+     * To update User's profile information
+     */
     @Override
     public User update(User user) {
         User updatedUser = getById(user.getId());
@@ -293,14 +385,24 @@ public class UserServiceImpl implements UserService {
         if (user.getTimezone() != null) {
             updatedUser.setTimezone(user.getTimezone());
         }
+        log.info("Updating profile of user with user id: {}", user.getId());
         return userRepository.save(updatedUser);
     }
 
+    /**
+     * @param authority
+     * @return List<User>
+     * To get the user based on authority
+     */
     @Override
     public List<User> getByAuthority(User.Authority authority) {
         return userRepository.findByAuthority(authority);
     }
 
+    /**
+     * @return List<User>
+     * To get all the patients without subscriptions
+     */
     @Override
     public List<User> getForAdmin() {
         List<User> users = new LinkedList<>();
@@ -311,6 +413,10 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @return User
+     * To get all the doctors details
+     */
     @Override
     public User getDefaultDoctor() {
         List<User> doctors = userRepository.findByAuthority(User.Authority.DOCTOR);
@@ -320,14 +426,20 @@ public class UserServiceImpl implements UserService {
         return doctors.get(0);
     }
 
+    /**
+     * @param email
+     * To send reset password email to the user
+     */
     @Override
     public void sendResetPasswordEmail(String email) {
         List<User> users = userRepository.findByEmail(email);
         if (users.isEmpty()) {
+            log.error("Email id is not associated with this account {}", email);
             throw new UserException("Your email address may not be associated with an account, please try again.");
         }
         User user = users.get(0);
         String token = tokenService.createResetPasswordToken(user.getId());
+        log.info("Token generated for reset password for user with id {}", user.getId());
         emailService.sendResetPasswordEmail(email, token);
     }
 }

@@ -34,6 +34,12 @@ public class ScheduleService {
         return queue.add(new ScheduledTask(runnable, executionDate));
     }
 
+    /**
+     * @param runnable
+     * @param delayInMilliseconds
+     * @return boolean
+     * To run the scheduled notification from the queue of notifications
+     */
     public boolean scheduleTask(Runnable runnable, long delayInMilliseconds) {
         return queue.add(new ScheduledTask(runnable, Date.from(Instant.now().plusMillis(delayInMilliseconds))));
     }

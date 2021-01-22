@@ -138,6 +138,11 @@ public class SubscriptionEngine {
         }
     }
 
+    /**
+     * @param subscription
+     * To check whether the prescription date is expired
+     * and if its' expired update the status of subscription as finished
+     */
     private void checkPrescriptionDate(ProductSubscription subscription) {
         LocalDate prescriptionToDate = convertToLocalDateViaInstant(subscription.getPrescription().getToDate());
         if (prescriptionToDate.isBefore(now())) {
@@ -182,6 +187,14 @@ public class SubscriptionEngine {
                 .toLocalDate();
     }
 
+    /**
+     * @param patientId
+     * @param promoCodeString
+     * @return List<ProductSubscription>
+     * To checkout product items from cart and
+     * add those product items in subscription
+     * and remove from patient's cart repo
+     */
     @Transactional
     public List<ProductSubscription> checkoutCart(Long patientId, String promoCodeString) {
         PromoCode promoCode = null;
@@ -250,6 +263,12 @@ public class SubscriptionEngine {
         return subscription;
     }
 
+    /**
+     * @param patientId
+     * @param dto
+     * @return ProductSubscription
+     * To create product subscriptions with Prescription number
+     */
     public ProductSubscription createSubscriptionWithRxNumber(Long patientId, RxTransferSubscriptionDto dto) {
         PromoCode promoCode = null;
         if (dto.getPromoCode() != null && !dto.getPromoCode().isEmpty()) {
@@ -404,6 +423,12 @@ public class SubscriptionEngine {
         }
     }
 
+    /**
+     * @param purchaseOrder
+     * @return PurchaseOrder
+     * To send order to pharmacy (set status of the purchase order to waiting for pharmacist)
+     * and update the prescription with left refill value
+     */
     public PurchaseOrder sendOrderToPharmacy(PurchaseOrder purchaseOrder) {
         ProductSubscription subscription = purchaseOrder.getSubscription();
 
@@ -416,6 +441,11 @@ public class SubscriptionEngine {
         return orderEngine.getById(purchaseOrder.getId());
     }
 
+    /**
+     * @param purchaseOrder
+     * @return PurchaseOrder
+     * To set status of the order to waiting to pharmacy rx check
+     */
     @Transactional
     public PurchaseOrder sendTransferRxOrderToPharmacy(PurchaseOrder purchaseOrder) {
         purchaseOrder.setStatus(PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK);
@@ -423,18 +453,31 @@ public class SubscriptionEngine {
         return purchaseOrderRepository.save(purchaseOrder);
     }
 
+    /**
+     * @param purchaseOrder
+     * @param amount
+     * @throws PaymentException
+     * To validate the amount
+     * and to validate the billing card information
+     * and to check whether the payment done
+     * and set the status of the order as packaging
+     * If the billing card is not valid or error in payment, pause the order
+     */
     @Transactional
     public void performOrder(PurchaseOrder purchaseOrder, long amount) throws PaymentException {
         if (amount > purchaseOrder.getOrderPrice()) {
+            log.error("Provider amount is greater than order total amount for order with id {}", purchaseOrder.getId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amount cannot be greater than order total price");
         }
         try {
             if (purchaseOrder.getSubscription().getBillingCard() == null || !purchaseOrder.getSubscription().getBillingCard().getIsValid()) {
+                log.error("Billing card information in not valid for the order with id {}", purchaseOrder.getId());
                 throw new PaymentException("User have no valid billing card");
             }
             purchaseOrder.setTransactionId(paymentService.capturePayment(orderEngine.getOrderPaymentId(purchaseOrder), purchaseOrder.getTransactionId(), amount));
             purchaseOrder.setCoPay(amount);
             orderEngine.updateOrderStatus(purchaseOrder.getId(), PurchaseOrder.Status.PACKAGING);
+            log.info("Purchase order with id {} is ready for packaging", purchaseOrder.getId());
         } catch (Exception e) {
             pauseSubscription(purchaseOrder.getSubscription(), e.getMessage());
             log.error("[ERROR] Order " + purchaseOrder.getNumber() + "-" + purchaseOrder.getSubNumber() + " failed. " + e.getMessage());
@@ -442,6 +485,14 @@ public class SubscriptionEngine {
         }
     }
 
+    /**
+     * @param purchaseOrder
+     * @param amount
+     * @param refillsLeft
+     * @param toDate
+     * @throws PaymentException
+     * To set the status of the product subscription as completed with complete message
+     */
     @Transactional
     public void performOrderWithRxTransfer(PurchaseOrder purchaseOrder, long amount, int refillsLeft, LocalDate toDate) throws PaymentException {
         ProductSubscription subscription = purchaseOrder.getSubscription();
@@ -457,6 +508,12 @@ public class SubscriptionEngine {
         performOrder(purchaseOrder, amount);
     }
 
+    /**
+     * @param subscription
+     * @param mdPostConsultNote
+     * To create prescription after the doctor consultation with doctor notes
+     * and send notification of subscription approval to the patient
+     */
     @Transactional
     public void createPrescription(ProductSubscription subscription, MdPostConsultNote mdPostConsultNote) {
         mdPostConsultNote.setDoctorsFullName(subscription.getDoctor().getFirstName() + " " + subscription.getDoctor().getLastName());
@@ -481,15 +538,26 @@ public class SubscriptionEngine {
 
         subscription.setPrescription(savedPrescription);
         subscriptionRepository.save(subscription);
+        log.info("Prescription for product subscription with id {} for the user with id {} created", subscription.getId(), subscription.getUser().getId());
         notificationEngine.notify(NotificationEventTypeContainer.SUBSCRIPTION_APPROVAL, subscription);
     }
 
+    /**
+     * @param subscriptionId
+     * @param status
+     * To update the product subscription status
+     */
     @Transactional
     public void updateSubscriptionStatus(Long subscriptionId, ProductSubscription.Status status) {
         ProductSubscription subscription = this.getById(subscriptionId);
         updateStatusAndSave(subscription, status);
     }
 
+    /**
+     * @param subscription
+     * @param pharmacyId
+     * To set pharmacy id for the product subscription
+     */
     @Transactional
     public void setPharmacyId(ProductSubscription subscription, String pharmacyId) {
         subscription.setPharmacyId(pharmacyId);
@@ -502,11 +570,22 @@ public class SubscriptionEngine {
         );
     }
 
+    /**
+     * @param subscription
+     * @param notes
+     * @return ProductSubscription
+     * To set pause notes for the subscription
+     */
     public ProductSubscription setPauseNotes(ProductSubscription subscription, String notes) {
         subscription.setNotes(notes);
         return subscriptionRepository.save(subscription);
     }
 
+    /**
+     * @param subscription
+     * @return ProductSubscription
+     * To Pause the subscription by the patient (to update the subscription status as paused by patient)
+     */
     public ProductSubscription pauseSubscriptionByPatient(ProductSubscription subscription) {
         if (subscription.getOrders().stream().anyMatch(o -> o.getStatus().equals(PurchaseOrder.Status.IN_PROGRESS))) {
             subscription.getOrders().stream()
@@ -521,6 +600,11 @@ public class SubscriptionEngine {
         }
     }
 
+    /**
+     * @param subscription
+     * @return ProductSubscription
+     * To Resume the paused product subscription by patient
+     */
     public ProductSubscription resumeSubscriptionPausedByPatient(ProductSubscription subscription) {
         subscription.setNotes("");
         subscription.setPauseDate(null);
@@ -535,13 +619,23 @@ public class SubscriptionEngine {
         return subscription;
     }
 
+    /**
+     * @param subscription
+     * @param notes
+     * @return ProductSubscription
+     * To pause the product subscription based on the status of the order
+     */
     public ProductSubscription pauseSubscription(ProductSubscription subscription, String notes) {
         subscription.setNotes(notes);
         subscription.setPauseDate(now());
         if (subscription.getStatus().equals(ProductSubscription.Status.WAITING_PHARMACY_RX_CHECK)) {
             updateStatusAndSave(subscription, ProductSubscription.Status.PAUSED_RX_TRANSFER);
+            log.info("Product Subscription with id {} is paused with status {}", subscription.getId(),
+                    ProductSubscription.Status.PAUSED_RX_TRANSFER);
         } else {
             updateStatusAndSave(subscription, ProductSubscription.Status.PAUSED);
+            log.info("Product Subscription with id {} is paused with status {}", subscription.getId(),
+                    ProductSubscription.Status.PAUSED);
         }
         Map<String, String> additionalParams = new HashMap<>();
         additionalParams.put("notes", notes);
@@ -552,6 +646,12 @@ public class SubscriptionEngine {
         return subscription;
     }
 
+    /**
+     * @param subscription
+     * @return ProductSubscription
+     * To resume the paused product subscription
+     * and update the status of the subscription based on the previous subscription status
+     */
     public ProductSubscription resumeSubscription(ProductSubscription subscription) {
         subscription.setNotes("");
         subscription.setPauseDate(null);
@@ -564,16 +664,24 @@ public class SubscriptionEngine {
         subscription.getOrders().stream()
                 .filter(o -> o.getStatus().equals(PurchaseOrder.Status.PAUSED) || o.getStatus().equals(PurchaseOrder.Status.PAUSED_RX_TRANSFER))
                 .forEach(o -> orderEngine.resumeOrder(o));
+        log.info("Product subscription with id {} resumed and notification sent to the user with id {}", subscription.getId(), subscription.getUser().getId());
         if (!subscription.getStatus().equals(ProductSubscription.Status.PAUSED)
                 && !subscription.getStatus().equals(ProductSubscription.Status.PAUSED_RX_TRANSFER)
                 && !subscription.getStatus().equals(ProductSubscription.Status.WAITING_PHARMACY_RX_CHECK)
                 && subscription.getPrescription().getRefillsLeft() == 0) {
             subscription.setFinishNotes(NO_REFILLS_LEFT_MESSAGE);
             updateStatusAndSave(subscription, ProductSubscription.Status.COMPLETED);
+            log.info("Product Subscription with id {} is completed and no refills left for the user with id {}", subscription.getId(), subscription.getUser().getId());
         }
         return subscription;
     }
 
+    /**
+     * @param subscription
+     * @return ProductSubscription
+     * To Cancel the product subscription
+     * and send notification to the user
+     */
     public ProductSubscription cancelSubscription(ProductSubscription subscription) {
         updateStatusAndSave(subscription, ProductSubscription.Status.CANCELLED);
         subscription.getOrders().stream()
@@ -581,10 +689,17 @@ public class SubscriptionEngine {
                 .forEach(o -> orderEngine.updateOrderStatus(o.getId(), PurchaseOrder.Status.CANCELLED));
 
         notificationEngine.notify(NotificationEventTypeContainer.SUBSCRIPTION_CANCELED, subscription);
-
+        log.info("Product subscription with id {} has been cancelled and notification sent to the user with id {}",
+                subscription.getId(), subscription.getUser().getId());
         return subscription;
     }
 
+    /**
+     * @param id
+     * @param rejectionNotes
+     * @return ProductSubscription
+     * To set the status of the purchase order or subscription to rejected
+     */
     public ProductSubscription rejectSubscription(Long id, String rejectionNotes) {
         ProductSubscription subscription = this.getById(id);
         subscription.setNotes(rejectionNotes);
@@ -607,6 +722,11 @@ public class SubscriptionEngine {
         return subscription;
     }
 
+    /**
+     * @param subscription
+     * @param newStatus
+     * To update the status of the product subscription to new given status
+     */
     @Transactional
     protected void updateStatusAndSave(ProductSubscription subscription, ProductSubscription.Status newStatus) {
         ProductSubscription.Status oldStatus = subscription.getStatus();

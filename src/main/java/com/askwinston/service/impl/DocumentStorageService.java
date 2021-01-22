@@ -28,11 +28,22 @@ public class DocumentStorageService {
         this.documentStorage = documentStorage;
     }
 
+    /**
+     * @param documentId
+     * @return Document
+     * @throws NotFoundException
+     * To get the document details by document id
+     */
     @Transactional
     public Document getDocumentById(Long documentId) throws NotFoundException {
         return repository.findById(documentId).orElseThrow(() -> new NotFoundException("Document with id " + documentId + " not found."));
     }
 
+    /**
+     * @param folder
+     * @param resource
+     * @return To upload document in google storage
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Document createDocument(String folder, DocumentResource resource) {
         String filename = resource.getFilename();
@@ -56,6 +67,11 @@ public class DocumentStorageService {
         }
     }
 
+    /**
+     * @param document
+     * @return DocumentResource
+     * To get the document resource form document details
+     */
     public DocumentResource getDocumentResource(Document document) {
         try {
             return documentStorage.load(document);
@@ -64,6 +80,10 @@ public class DocumentStorageService {
         }
     }
 
+    /**
+     * @param document
+     * To delete file or document from google storage and table
+     */
     @Transactional
     public void deleteFile(Document document) {
         try {

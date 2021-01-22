@@ -47,6 +47,13 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         this.userService = userService;
     }
 
+    /**
+     * @param userId
+     * @param dto
+     * @return BillingCard
+     * @throws PaymentException
+     * To Save new billing card for the patient
+     */
     @Override
     public BillingCard saveBillingCard(Long userId, BillingCardDto dto) throws PaymentException {
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -71,6 +78,11 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         return billingCard;
     }
 
+    /**
+     * @param card
+     * @throws PaymentException
+     * To delete billing card
+     */
     @Override
     public void deleteBillingCard(BillingCard card) throws PaymentException {
         userService.deleteBillingCard(card.getUser().getId(), card.getId());
@@ -86,6 +98,14 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         billingCardRepository.delete(card);
     }
 
+    /**
+     * @param orderId
+     * @param card
+     * @param amount
+     * @return
+     * @throws PaymentException
+     * Verifies and locks funds on the customer’s credit card. The funds are locked for a specified amount of time based on the card issuer.
+     */
     @Override
     public String lockAmount(String orderId, BillingCard card, long amount) throws PaymentException {
         ResPreauthCC resPreauthCC = new ResPreauthCC();
@@ -107,6 +127,14 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         return transactionId;
     }
 
+    /**
+     * @param orderId
+     * @param transactionNumber
+     * @param amount
+     * @return
+     * @throws PaymentException
+     * Retrieves funds that have been locked and prepares them for settlement into the merchant’s account
+     */
     @Override
     public String capturePayment(String orderId, String transactionNumber, long amount) throws PaymentException {
         Completion completion = new Completion();
@@ -127,6 +155,13 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         return transactionId;
     }
 
+    /**
+     * @param orderId
+     * @param transactionNumber
+     * @param amount
+     * @throws PaymentException
+     * To refund the payment amount to the patient
+     */
     @Override
     public void refundPayment(String orderId, String transactionNumber, long amount) throws PaymentException {
         Refund refund = new Refund();
@@ -146,6 +181,13 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         }
     }
 
+    /**
+     * @param card
+     * @throws PaymentException
+     * To credit card, expiry date and any additional details
+     * (such as the Card Verification Digits or Address Verification details).
+     * It does not verify the available amount.
+     */
     @Override
     public void verifyBillingCard(BillingCard card) throws PaymentException {
         ResCardVerificationCC resCardVerificationCC = new ResCardVerificationCC();
@@ -164,6 +206,11 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         card.setBrand(receipt.getCardType());
     }
 
+    /**
+     * @param transaction
+     * @return HttpsPostRequest
+     * To send http request to Moneris for operations related to payment
+     */
     private HttpsPostRequest createHttpsPostRequest(Transaction transaction) {
         HttpsPostRequest mpgReq = new HttpsPostRequest();
         mpgReq.setProcCountryCode(countryCode);
@@ -175,6 +222,12 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         return mpgReq;
     }
 
+    /**
+     * @param receipt
+     * @param dto
+     * @return BillingCard
+     * To build billing card model with card information of the patient
+     */
     private BillingCard buildBillingCard(Receipt receipt, BillingCardDto dto) {
         return BillingCard.builder()
                 .id(receipt.getDataKey())

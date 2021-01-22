@@ -58,6 +58,11 @@ public class EmailServiceImpl implements EmailService {
         this.emailSender = emailSender;
     }
 
+    /**
+     * @param email
+     * @param token
+     * To send reset password email to the user
+     */
     @Override
     public void sendResetPasswordEmail(String email, String token) {
         try {
@@ -83,6 +88,11 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    /**
+     * @param billingProvince
+     * @return String
+     * To choose pharmacy email based on the province
+     */
     @Override
     public String choosePharmacyEmail(Province billingProvince) {
         if (EAST_PROVINCES.contains(billingProvince)) {
@@ -96,6 +106,12 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    /**
+     * @param template
+     * @param templateVars
+     * @return String
+     * To substitute values in the email templates
+     */
     private String substituteValues(String template, HashMap<String, String> templateVars) {
         for (Map.Entry<String, String> entry : templateVars.entrySet()) {
             template = template.replace("{" + entry.getKey() + "}", entry.getValue());
@@ -103,6 +119,9 @@ public class EmailServiceImpl implements EmailService {
         return template;
     }
 
+    /**
+     * Thread to send the email
+     */
     private static class SendEmailTask implements Runnable {
 
         JavaMailSender emailSender;
@@ -119,6 +138,14 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    /**
+     * @param to
+     * @param subject
+     * @param html
+     * @param inlines
+     * @throws MessagingException
+     * To send notification emails to the user
+     */
     @Override
     public void send(String to, String subject, String html, List<Inline> inlines) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();

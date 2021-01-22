@@ -8,6 +8,7 @@ import com.askwinston.repository.UserRepository;
 import com.askwinston.service.StatisticsService;
 import com.askwinston.subscription.ProductSubscription;
 import com.askwinston.subscription.ProductSubscriptionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class StatisticsServiceImpl implements StatisticsService {
 
     private ProductSubscriptionRepository subscriptionRepository;
@@ -44,6 +46,12 @@ public class StatisticsServiceImpl implements StatisticsService {
         this.orderRepository = orderRepository;
     }
 
+    /**
+     * @param from
+     * @param to
+     * @return byte[]
+     * To generate Excel sheet with shipped order details
+     */
     @Override
     public byte[] generateShippedOrdersReportXLSX(LocalDate from, LocalDate to) {
         try(Workbook book = new XSSFWorkbook()){
@@ -98,6 +106,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
     }
 
+    /**
+     * @return byte[]
+     * To generate Excel sheet with newly registered user's data
+     */
     @Override
     public byte[] generateNewUsersReportXLSX() {
         try(Workbook book = new XSSFWorkbook()){
@@ -127,6 +139,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
     }
 
+    /**
+     * @return List<UserReportRecord>
+     * To get all the user's details
+     */
     @Override
     public List<UserReportRecord> getUserReport() {
         Set<UserReportRecord> resultSet = new HashSet<>();
@@ -168,11 +184,18 @@ public class StatisticsServiceImpl implements StatisticsService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @param from
+     * @param to
+     * @return List<OrderReportRecord>
+     * To get shipping order report from given time period
+     */
     @Override
     public List<OrderReportRecord> getShippedOrdersReport(LocalDate from, LocalDate to) {
         NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.CANADA);
         DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
         decimalFormat.applyLocalizedPattern("###.00");
+        log.info("Getting shipping report from {} to {}", from, to);
         List<PurchaseOrder> orders = orderRepository.findByStatusAndShippingDateBetween(PurchaseOrder.Status.DELIVERING, from, to);
         List<OrderReportRecord> result = new LinkedList<>();
         AtomicLong i = new AtomicLong(1);
@@ -208,10 +231,16 @@ public class StatisticsServiceImpl implements StatisticsService {
         return result;
     }
 
+    /**
+     * @return List<StatisticsCreatedAnAccountRecord>
+     * To get patients details who are all not purchase any product yet
+     */
     @Override
     public List<StatisticsCreatedAnAccountRecord> getCreatedAnAccountStatistics() {
+        log.info("Getting patient details..");
         List<User> users = userRepository.findByAuthority(User.Authority.PATIENT);
         List<StatisticsCreatedAnAccountRecord> result = new ArrayList<>();
+        log.info("Filtering patients who are all not purchase any product..");
         users.stream()
                 .filter(user -> subscriptionRepository.findAllByUser(user).isEmpty())
                 .forEach(user -> {
@@ -229,10 +258,15 @@ public class StatisticsServiceImpl implements StatisticsService {
         return result;
     }
 
+    /**
+     * @return List<StatisticsCustomerRecord>
+     * To get patients who are all purchased products
+     */
     @Override
     public List<StatisticsCustomerRecord> getCustomersStatistics() {
         List<User> users = userRepository.findByAuthority(User.Authority.PATIENT);
         List<StatisticsCustomerRecord> result = new ArrayList<>();
+        log.info("Filtering patients who are all customer of askwinston..");
         users.stream()
                 .filter(user -> !subscriptionRepository.findAllByUser(user).isEmpty())
                 .forEach(user -> {
@@ -251,13 +285,22 @@ public class StatisticsServiceImpl implements StatisticsService {
         return result;
     }
 
+    /**
+     * @return List<StayConnectedRecord>
+     * To get stay connected user details
+     */
     @Override
     public List<StayConnectedRecord> getStayConnectedStatistics() {
+        log.info("Getting stay connected contacts..");
         List<StayConnectedRecord> result = new ArrayList<>();
         stayConnectedRecordRepository.findAll().forEach(result::add);
         return result;
     }
 
+    /**
+     * @return List<ContactUsRecord>
+     * To get contact us user details
+     */
     @Override
     public List<ContactUsRecord> getContactUsStatistics() {
         List<ContactUsRecord> result = new ArrayList<>();
@@ -265,8 +308,14 @@ public class StatisticsServiceImpl implements StatisticsService {
         return result;
     }
 
+    /**
+     * @param user
+     * @return List<StatisticsSubscriptionRecord>
+     * To get subscription details of given user
+     */
     private List<StatisticsSubscriptionRecord> getSubscriptionsRecords(User user) {
         List<StatisticsSubscriptionRecord> result = new ArrayList<>();
+        log.info("Filtering subscription details of user with id {}", user.getId());
         subscriptionRepository.findAllByUser(user).forEach(s -> {
             String nextOrderDate = s.getNextOrderDate() == null ? "" : s.getNextOrderDate().toString();
             StatisticsSubscriptionRecord subscriptionRecord = StatisticsSubscriptionRecord.builder()
@@ -280,6 +329,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         return result;
     }
 
+    /**
+     * @param subscription
+     * @return List<StatisticsOrderRecord>
+     * To get order details of given subscription
+     */
     private List<StatisticsOrderRecord> getOrdersRecords(ProductSubscription subscription) {
         List<StatisticsOrderRecord> result = new ArrayList<>();
         subscription.getOrders()

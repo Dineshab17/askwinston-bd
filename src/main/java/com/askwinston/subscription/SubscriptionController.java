@@ -63,6 +63,12 @@ public class SubscriptionController {
         this.documentService = documentService;
     }
 
+    /**
+     * @param textDto
+     * @param principal
+     * @return List<ProductSubscriptionDto>
+     * To product subscription for the patient from the cart items
+     */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -78,6 +84,12 @@ public class SubscriptionController {
         }
     }
 
+    /**
+     * @param dto
+     * @param principal
+     * @return ProductSubscriptionDto
+     * To create subscription with prescription details
+     */
     @PostMapping("/with-rx")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -93,6 +105,13 @@ public class SubscriptionController {
         }
     }
 
+    /**
+     * @param id
+     * @param mdPostConsultNoteDto
+     * To confirm the subscription after doctor consultation
+     * and create prescription for the subscription
+     * and send notification to the patient of notification approval
+     */
     @PutMapping("/{id}/start")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
     public void confirmSubscription(@PathVariable("id") Long id,
@@ -110,6 +129,12 @@ public class SubscriptionController {
         }
     }
 
+    /**
+     * @param principal
+     * @param id
+     * @return ProductSubscriptionDto
+     * To pause the product subscription to paused by patient
+     */
     @PutMapping("/{id}/pause")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     public ProductSubscriptionDto pauseSubscriptionByPatient(@AuthenticationPrincipal AwUserPrincipal principal, @PathVariable("id") Long id) {
@@ -121,6 +146,12 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscriptionEngine.pauseSubscriptionByPatient(subscription), ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @param pauseNotes
+     * @return ProductSubscriptionDto
+     * To set the pause notes for the product subscription
+     */
     @PutMapping("/{id}/pause-notes")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     public ProductSubscriptionDto setPauseNotes(@PathVariable("id") Long id, @RequestBody TextDto pauseNotes) {
@@ -128,6 +159,12 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscriptionEngine.setPauseNotes(subscription, pauseNotes.getText()), ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @param id
+     * @return ProductSubscriptionDto
+     * To Resume the paused product subscription by patient
+     */
     @PutMapping("/{id}/resume-paused-by-patient")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     public ProductSubscriptionDto resumeSubscriptionPausedByPatient(@AuthenticationPrincipal AwUserPrincipal principal, @PathVariable("id") Long id) {
@@ -139,6 +176,11 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscriptionEngine.resumeSubscriptionPausedByPatient(subscription), ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @param principal
+     * @return ProductSubscriptionDto
+     */
     @PostMapping("/{id}/send")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
