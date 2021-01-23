@@ -75,9 +75,9 @@ deploy_to_google_alpha:
   - echo $DOCKER_SERVER
   - gcloud auth activate-service-account --key-file=key.json
   - gcloud config set project askwinston-251209
-  - gcloud config set container/cluster aw-dev
+  - gcloud config set container/cluster aw-alpha
   - gcloud config set compute/zone northamerica-northeast1-c
-  - gcloud container clusters get-credentials aw-dev --zone northamerica-northeast1-c
+  - gcloud container clusters get-credentials aw-alpha --zone northamerica-northeast1-c
   - gcloud components install kubectl
   - kubectl delete secret --ignore-not-found=true keyforbackendalpha 
   - kubectl create secret docker-registry keyforbackendalpha --docker-server=registry.gitlab.com --docker-username=vveerasa --docker-password=Deck2021# --docker-email=vijayram@askwinston.ca
