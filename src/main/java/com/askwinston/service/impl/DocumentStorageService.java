@@ -5,6 +5,7 @@ import com.askwinston.model.Document;
 import com.askwinston.model.DocumentResource;
 import com.askwinston.repository.DocumentRepository;
 import com.askwinston.service.DocumentStorage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class DocumentStorageService {
 
     private static final String WRONG_FILE_SYMBOLS = "[+]";
@@ -89,6 +91,7 @@ public class DocumentStorageService {
         try {
             documentStorage.remove(document);
         } catch (IOException e) {
+            log.error("Error deleting document: {}", document.getPath());
             throw new IllegalArgumentException("Error deleting document: " + document.getPath(), e);
         }
         repository.delete(document);

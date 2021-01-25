@@ -44,6 +44,9 @@ public class ScheduleService {
         return queue.add(new ScheduledTask(runnable, Date.from(Instant.now().plusMillis(delayInMilliseconds))));
     }
 
+    /**
+     * To check the queue and execute the task
+     */
     @Scheduled(fixedRate = FIXED_RATE_IN_MILLISECONDS)
     private void checkQueue() {
         queue.stream()

@@ -17,6 +17,11 @@ public class DateServiceImpl implements DateService {
     public static final String SERVER_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CLIENT_DATE_FORMAT = "MMM d, yyyy";
 
+    /**
+     * @param dateString
+     * @return Date
+     * To parse string date into server date time format
+     */
     @Override
     public Date parseDateTime(String dateString) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(SERVER_DATETIME_FORMAT);
@@ -28,6 +33,13 @@ public class DateServiceImpl implements DateService {
         }
     }
 
+    /**
+     * @param dateString
+     * @param format
+     * @param timezone
+     * @return Date
+     * To parse string date into given date format and time zone
+     */
     @Override
     public Date parseDateTime(String dateString, String format, String timezone) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(format);
@@ -39,6 +51,13 @@ public class DateServiceImpl implements DateService {
         }
     }
 
+    /**
+     * @param date
+     * @param format
+     * @param timezone
+     * @return String
+     * To convert Date into string date with given date format and time zone
+     */
     @Override
     public String formatDateTime(Date date, String format, String timezone) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(format);
@@ -46,6 +65,12 @@ public class DateServiceImpl implements DateService {
         return dateFormat.format(date);
     }
 
+    /**
+     * @param date
+     * @param timezone
+     * @return String
+     * To convert Date into string date with given time zone
+     */
     @Override
     public String formatDateTime(Date date, String timezone) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(CLIENT_DATETIME_FORMAT);
@@ -53,6 +78,11 @@ public class DateServiceImpl implements DateService {
         return dateFormat.format(date);
     }
 
+    /**
+     * @param birthday
+     * @return String
+     * To format birthday date of the user
+     */
     @Override
     public String formatBirthday(String birthday) {
         SimpleDateFormat serverDateFormat = new SimpleDateFormat(SERVER_DATE_FORMAT);

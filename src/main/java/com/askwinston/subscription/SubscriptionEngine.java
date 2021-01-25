@@ -116,6 +116,10 @@ public class SubscriptionEngine {
         random = new Random();
     }
 
+    /**
+     * Scheduled job to check next order date of the subscriptions
+     * and perform the order
+     */
     @Scheduled(cron = "${notification.cron:0 0 12 * * *}")
     public void checkSubscriptions() {
         List<ProductSubscription> subscriptions = subscriptionRepository.findAllByStatusIn(ProductSubscription.Status.ACTIVE, ProductSubscription.Status.PAUSED, ProductSubscription.Status.PAUSED_BY_PATIENT);
@@ -132,9 +136,14 @@ public class SubscriptionEngine {
         log.info("Check subscriptions performed");
     }
 
+    /**
+     * @param subscription
+     * To send notification to the user before the refill date
+     */
     private void sendSoonRefillNotification(ProductSubscription subscription) {
         if (subscription.getStatus().equals(ProductSubscription.Status.ACTIVE)) {
             notificationEngine.notify(NotificationEventTypeContainer.REFILL_SOON_REMINDER, subscription);
+            log.info("Refill soon remainder notification sent to the user with id {}", subscription.getUser().getId());
         }
     }
 
@@ -151,10 +160,22 @@ public class SubscriptionEngine {
         }
     }
 
+    /**
+     * @param subscription
+     * To process the subscription
+     */
     protected void processSubscription(ProductSubscription subscription) {
         processSubscription(subscription, false);
     }
 
+    /**
+     * @param subscription
+     * @param earlyRefill
+     * To check the subscription status
+     * and process the subscription, if the subscription is active
+     * set the status as completed, if the there is no refill left to process
+     * and send the notification to the user, if the refill left date is sooner
+     */
     protected void processSubscription(ProductSubscription subscription, boolean earlyRefill) {
         checkPrescriptionDate(subscription);
         if (subscription.getStatus().equals(ProductSubscription.Status.ACTIVE)) {
@@ -168,6 +189,7 @@ public class SubscriptionEngine {
                 updatedSubscription.setStatus(ProductSubscription.Status.COMPLETED);
                 updatedSubscription.setFinishNotes(NO_REFILLS_LEFT_MESSAGE);
                 subscriptionRepository.save(updatedSubscription);
+                log.info("Subscription with id {} has been completed", updatedSubscription.getId());
                 return;
             }
             updatedSubscription.setNextOrderDate(now().plusMonths(updatedSubscription.getPeriod()).plusDays(DELIVERY_DAYS));
@@ -177,6 +199,7 @@ public class SubscriptionEngine {
                 notificationEngine.notify(NotificationEventTypeContainer.EARLY_REFILL_SUBMITTED, updatedSubscription);
             }
         } else {
+            log.error("Subscription with id {} is inactive", subscription.getId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subscription " + subscription.getId() + " inactive");
         }
     }
@@ -216,6 +239,13 @@ public class SubscriptionEngine {
         return subscriptions;
     }
 
+    /**
+     * @param patient
+     * @param cartItem
+     * @param promoCode
+     * @return ProductSubscription
+     * To create new subscription for the patient from the cart items
+     */
     protected ProductSubscription createSubscription(User patient, CartItem cartItem, PromoCode promoCode) {
         ProductSubscription subscription = new ProductSubscription();
         subscription.setCreationDate(LocalDateTime.now(ZoneId.of("Canada/Eastern")));
@@ -324,6 +354,15 @@ public class SubscriptionEngine {
         return subscriptionRepository.save(subscription);
     }
 
+    /**
+     * @param subscription
+     * @param rxDocumentId
+     * @param rxNumber
+     * @param pharmacyNameAndAddress
+     * @param pharmacyPhone
+     * @return ProductSubscription
+     * to generate the prescription for the user
+     */
     protected ProductSubscription transferPrescription(ProductSubscription subscription, Long rxDocumentId, String rxNumber, String pharmacyNameAndAddress,
                                                        String pharmacyPhone) {
         Date nowDate = Date.from(Instant.now());
@@ -339,12 +378,18 @@ public class SubscriptionEngine {
                 .refills(subscription.getTotalRefills())
                 .build();
         Prescription savedPrescription = prescriptionRepository.save(prescription);
+        log.info("Prescription has been generated for the user with id {}", subscription.getUser().getId());
         rxTransferService.deleteRxTransferStateByUser(subscription.getUser().getId());
         subscription.setPrescription(savedPrescription);
         subscription.setStatus(ProductSubscription.Status.WAITING_PHARMACY_RX_CHECK);
         return subscriptionRepository.save(subscription);
     }
 
+    /**
+     * @param subscription
+     * @return PurchaseOrder
+     * To create new order for the subscription
+     */
     public PurchaseOrder createOrderToSubscription(ProductSubscription subscription) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setSubscription(subscription);
@@ -397,10 +442,16 @@ public class SubscriptionEngine {
         purchaseOrder.setSubNumber(subscription.getLastOrderSubNumber());
         subscriptionRepository.save(subscription);
 
+        log.info("Subscription with id {} has been updated with new purchase order for the user with id {}",
+                subscription.getId(), subscription.getUser().getId());
         return purchaseOrderRepository.save(purchaseOrder);
 
     }
 
+    /**
+     * @param purchaseOrder
+     * Perform payment or lock amount for the purhcase order
+     */
     private void performPayment(PurchaseOrder purchaseOrder) {
         ProductSubscription subscription = purchaseOrder.getSubscription();
         // Checkout in Moneris
@@ -409,6 +460,7 @@ public class SubscriptionEngine {
             purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
             orderEngine.fillOrderBillingInfo(purchaseOrder);
             transactionId = paymentService.lockAmount(orderEngine.getOrderPaymentId(purchaseOrder), subscription.getBillingCard(), purchaseOrder.getOrderPrice());
+            log.info("Amount has been locked for the order: {}, for the user: {}", purchaseOrder.getId(), purchaseOrder.getUser().getId());
             purchaseOrder.setTransactionId(transactionId);
             purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
             subscription.getOrders().add(purchaseOrder);
@@ -712,6 +764,11 @@ public class SubscriptionEngine {
         subscriptions.forEach(subscription -> updateStatusAndSave(subscription, newStatus));
     }
 
+    /**
+     * @param id
+     * @return ProductSubscription
+     * To skip the next refill of the user
+     */
     public ProductSubscription skipNextOrder(Long id) {
         ProductSubscription subscription = this.getById(id);
         if (!subscription.getNextOrderDate().plusMonths(1).isAfter(convertToLocalDateViaInstant(subscription.getPrescription().getToDate()))) {

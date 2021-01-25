@@ -37,13 +37,6 @@ public class ParsingHelper {
         this.notificationTemplateRepository = notificationTemplateRepository;
     }
 
-    /**
-     * @param source
-     * @param resultType
-     * @param <T>
-     * @return
-     * To map one type of object to another type of object
-     */
     public <T> T mapObject(Object source, Class<T> resultType) {
         return modelMapper.map(source, resultType);
     }

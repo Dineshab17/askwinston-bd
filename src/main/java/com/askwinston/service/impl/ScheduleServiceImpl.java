@@ -230,6 +230,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         doctorSlotRepository.deleteAll(slots);
     }
 
+    /**
+     * @param doctor
+     * @param intervals
+     * @return List<DoctorSlot>
+     * To create doctor schedule from given intervals
+     */
     private List<DoctorSlot> createScheduleFromIntervals(User doctor, List<TimeInterval> intervals) {
         List<DoctorSlot> newSlots = new ArrayList<>();
         intervals.forEach(interval -> {
@@ -249,6 +255,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         return saveDoctorSlots(doctor, newSlots);
     }
 
+    /**
+     * @param doctor
+     * @param slots
+     * @return List<DoctorSlot>
+     * To save list of slots for the doctor
+     */
     private List<DoctorSlot> saveDoctorSlots(User doctor, List<DoctorSlot> slots) {
         Set<LocalDate> dateSet = new HashSet<>();
         slots.forEach(slot -> dateSet.add(slot.getDate()));
@@ -269,6 +281,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         return Lists.newArrayList(resultSet);
     }
 
+    /**
+     * @param doctor
+     * @param intervals
+     * @param startDate
+     * @return ScheduleScheme
+     * To generate new schedule scheme for the doctor
+     */
     private ScheduleScheme generateScheduleScheme(User doctor, List<TimeInterval> intervals, LocalDate startDate) {
         Optional<ScheduleScheme> oldScheduleScheme = scheduleSchemeRepository.findByDoctor(doctor);
         final ScheduleScheme scheduleScheme = scheduleSchemeRepository.save(new ScheduleScheme());

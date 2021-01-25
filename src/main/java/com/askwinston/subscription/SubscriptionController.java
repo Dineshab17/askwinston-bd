@@ -194,6 +194,10 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @return List<ProductSubscriptionDto>
+     * To get subscriptions waiting for doctor
+     */
     @GetMapping("/waiting-doctor")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
     @JsonView(DtoView.DoctorVisibility.class)
@@ -203,6 +207,10 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @return List<ProductSubscriptionDto>
+     * To get subscriptions with paused state
+     */
     @GetMapping("/paused")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @JsonView(DtoView.AdminVisibility.class)
@@ -214,6 +222,11 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @return List<ProductSubscriptionDto>
+     * To get all subscriptions of the particular user
+     */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -224,6 +237,11 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @return ProductSubscriptionDto
+     * To skip the next order of the subscription
+     */
     @PutMapping("/{id}/skip")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public ProductSubscriptionDto skipRefill(@PathVariable("id") Long id) {
@@ -231,6 +249,11 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @return ProductSubscriptionDto
+     * To cancel the subscriptions
+     */
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ProductSubscriptionDto cancel(@PathVariable("id") Long id) {
@@ -239,12 +262,23 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @param rejectionNotes
+     * To reject the subscriptions
+     */
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasAnyAuthority('DOCTOR', 'PHARMACIST')")
     public void rejectSubscription(@PathVariable("id") Long id, @RequestBody TextDto rejectionNotes) {
         subscriptionEngine.rejectSubscription(id, rejectionNotes.getText());
     }
 
+    /**
+     * @param id
+     * @param principal
+     * @return ProductSubscriptionDto
+     * To resume paused subscription
+     */
     @PutMapping("/{id}/resume")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -259,6 +293,11 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @return List<ProductSubscriptionDto>
+     * To get subscriptions of all the users
+     */
     @GetMapping("/all")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @JsonView(DtoView.AdminVisibility.class)
@@ -268,6 +307,13 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @param file
+     * @return Long
+     * @throws IOException
+     * To upload prescription document of the user
+     */
     @PutMapping(value = "/prescription", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public Long uploadPrescription(@AuthenticationPrincipal AwUserPrincipal principal,
@@ -276,6 +322,10 @@ public class SubscriptionController {
         return document.getId();
     }
 
+    /**
+     * @param userId
+     * To send scheduled notifications to the user
+     */
     private void scheduleShotTermNotification(final long userId) {
         User user = userService.getById(userId);
         Runnable task = () -> {
