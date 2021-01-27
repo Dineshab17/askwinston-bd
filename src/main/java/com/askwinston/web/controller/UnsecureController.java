@@ -6,7 +6,6 @@ import com.askwinston.order.OrderEngine;
 import com.askwinston.subscription.ProductSubscription;
 import com.askwinston.subscription.SubscriptionEngine;
 import com.rollbar.notifier.Rollbar;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;

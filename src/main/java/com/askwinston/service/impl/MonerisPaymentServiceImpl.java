@@ -24,18 +24,18 @@ import java.math.RoundingMode;
 public class MonerisPaymentServiceImpl implements PaymentService {
 
     @Value("${moneris.test-mode:true}")
-    private boolean TEST_MODE;
+    private boolean testMode;
 
     @Value("${moneris.country-code:CA}")
-    private String COUNTRY_CODE;
+    private String countryCode;
 
     @Value("${moneris.store-id}")
-    private String STORE_ID;
+    private String storeId;
 
     @Value("${moneris.api-token}")
-    private String API_TOKEN;
+    private String apiToken;
 
-    private String E_COMMERCE_INDICATOR = "5";
+    private String eCommerceIndicator = "5";
 
     private BillingCardRepository billingCardRepository;
     private UserRepository userRepository;
@@ -47,13 +47,20 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         this.userService = userService;
     }
 
+    /**
+     * @param userId
+     * @param dto
+     * @return BillingCard
+     * @throws PaymentException
+     * To Save new billing card for the patient
+     */
     @Override
     public BillingCard saveBillingCard(Long userId, BillingCardDto dto) throws PaymentException {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "Authenticated user does not have a record"));
         ResAddToken resAddToken = new ResAddToken();
         resAddToken.setDataKey(dto.getToken());
-        resAddToken.setCryptType(E_COMMERCE_INDICATOR); //Don't know what it is
+        resAddToken.setCryptType(eCommerceIndicator); //Don't know what it is
         resAddToken.setCustId(user.getFirstName() + " " + user.getLastName());
         resAddToken.setEmail(user.getEmail());
         resAddToken.setPhone(user.getPhone());
@@ -71,6 +78,11 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         return billingCard;
     }
 
+    /**
+     * @param card
+     * @throws PaymentException
+     * To delete billing card
+     */
     @Override
     public void deleteBillingCard(BillingCard card) throws PaymentException {
         userService.deleteBillingCard(card.getUser().getId(), card.getId());
@@ -86,6 +98,14 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         billingCardRepository.delete(card);
     }
 
+    /**
+     * @param orderId
+     * @param card
+     * @param amount
+     * @return
+     * @throws PaymentException
+     * Verifies and locks funds on the customer’s credit card. The funds are locked for a specified amount of time based on the card issuer.
+     */
     @Override
     public String lockAmount(String orderId, BillingCard card, long amount) throws PaymentException {
         ResPreauthCC resPreauthCC = new ResPreauthCC();
@@ -94,7 +114,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         resPreauthCC.setCustId(Long.toString(card.getUser().getId()));
         String stringAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), RoundingMode.HALF_EVEN).toString();
         resPreauthCC.setAmount(stringAmount);
-        resPreauthCC.setCryptType(E_COMMERCE_INDICATOR);
+        resPreauthCC.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(resPreauthCC);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -107,6 +127,14 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         return transactionId;
     }
 
+    /**
+     * @param orderId
+     * @param transactionNumber
+     * @param amount
+     * @return
+     * @throws PaymentException
+     * Retrieves funds that have been locked and prepares them for settlement into the merchant’s account
+     */
     @Override
     public String capturePayment(String orderId, String transactionNumber, long amount) throws PaymentException {
         Completion completion = new Completion();
@@ -114,7 +142,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         String stringAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), RoundingMode.HALF_EVEN).toString();
         completion.setCompAmount(stringAmount);
         completion.setTxnNumber(transactionNumber);
-        completion.setCryptType(E_COMMERCE_INDICATOR);
+        completion.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(completion);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -127,6 +155,13 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         return transactionId;
     }
 
+    /**
+     * @param orderId
+     * @param transactionNumber
+     * @param amount
+     * @throws PaymentException
+     * To refund the payment amount to the patient
+     */
     @Override
     public void refundPayment(String orderId, String transactionNumber, long amount) throws PaymentException {
         Refund refund = new Refund();
@@ -134,7 +169,7 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         refund.setOrderId(orderId);
         String stringAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), RoundingMode.HALF_EVEN).toString();
         refund.setAmount(stringAmount);
-        refund.setCryptType(E_COMMERCE_INDICATOR);
+        refund.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(refund);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -146,12 +181,19 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         }
     }
 
+    /**
+     * @param card
+     * @throws PaymentException
+     * To credit card, expiry date and any additional details
+     * (such as the Card Verification Digits or Address Verification details).
+     * It does not verify the available amount.
+     */
     @Override
     public void verifyBillingCard(BillingCard card) throws PaymentException {
         ResCardVerificationCC resCardVerificationCC = new ResCardVerificationCC();
         resCardVerificationCC.setOrderId(card.getLast4() + System.currentTimeMillis());
         resCardVerificationCC.setDataKey(card.getId());
-        resCardVerificationCC.setCryptType(E_COMMERCE_INDICATOR);
+        resCardVerificationCC.setCryptType(eCommerceIndicator);
         HttpsPostRequest mpgReq = createHttpsPostRequest(resCardVerificationCC);
         mpgReq.send();
         Receipt receipt = mpgReq.getReceipt();
@@ -164,17 +206,28 @@ public class MonerisPaymentServiceImpl implements PaymentService {
         card.setBrand(receipt.getCardType());
     }
 
+    /**
+     * @param transaction
+     * @return HttpsPostRequest
+     * To send http request to Moneris for operations related to payment
+     */
     private HttpsPostRequest createHttpsPostRequest(Transaction transaction) {
         HttpsPostRequest mpgReq = new HttpsPostRequest();
-        mpgReq.setProcCountryCode(COUNTRY_CODE);
-        mpgReq.setTestMode(TEST_MODE);
-        mpgReq.setStoreId(STORE_ID);
-        mpgReq.setApiToken(API_TOKEN);
+        mpgReq.setProcCountryCode(countryCode);
+        mpgReq.setTestMode(testMode);
+        mpgReq.setStoreId(storeId);
+        mpgReq.setApiToken(apiToken);
         mpgReq.setTransaction(transaction);
         mpgReq.setStatusCheck(false);
         return mpgReq;
     }
 
+    /**
+     * @param receipt
+     * @param dto
+     * @return BillingCard
+     * To build billing card model with card information of the patient
+     */
     private BillingCard buildBillingCard(Receipt receipt, BillingCardDto dto) {
         return BillingCard.builder()
                 .id(receipt.getDataKey())

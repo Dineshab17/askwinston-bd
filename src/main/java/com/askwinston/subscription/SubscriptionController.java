@@ -63,6 +63,12 @@ public class SubscriptionController {
         this.documentService = documentService;
     }
 
+    /**
+     * @param textDto
+     * @param principal
+     * @return List<ProductSubscriptionDto>
+     * To product subscription for the patient from the cart items
+     */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -78,6 +84,12 @@ public class SubscriptionController {
         }
     }
 
+    /**
+     * @param dto
+     * @param principal
+     * @return ProductSubscriptionDto
+     * To create subscription with prescription details
+     */
     @PostMapping("/with-rx")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -93,6 +105,13 @@ public class SubscriptionController {
         }
     }
 
+    /**
+     * @param id
+     * @param mdPostConsultNoteDto
+     * To confirm the subscription after doctor consultation
+     * and create prescription for the subscription
+     * and send notification to the patient of notification approval
+     */
     @PutMapping("/{id}/start")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
     public void confirmSubscription(@PathVariable("id") Long id,
@@ -110,6 +129,12 @@ public class SubscriptionController {
         }
     }
 
+    /**
+     * @param principal
+     * @param id
+     * @return ProductSubscriptionDto
+     * To pause the product subscription to paused by patient
+     */
     @PutMapping("/{id}/pause")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     public ProductSubscriptionDto pauseSubscriptionByPatient(@AuthenticationPrincipal AwUserPrincipal principal, @PathVariable("id") Long id) {
@@ -121,6 +146,12 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscriptionEngine.pauseSubscriptionByPatient(subscription), ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @param pauseNotes
+     * @return ProductSubscriptionDto
+     * To set the pause notes for the product subscription
+     */
     @PutMapping("/{id}/pause-notes")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     public ProductSubscriptionDto setPauseNotes(@PathVariable("id") Long id, @RequestBody TextDto pauseNotes) {
@@ -128,6 +159,12 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscriptionEngine.setPauseNotes(subscription, pauseNotes.getText()), ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @param id
+     * @return ProductSubscriptionDto
+     * To Resume the paused product subscription by patient
+     */
     @PutMapping("/{id}/resume-paused-by-patient")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     public ProductSubscriptionDto resumeSubscriptionPausedByPatient(@AuthenticationPrincipal AwUserPrincipal principal, @PathVariable("id") Long id) {
@@ -139,6 +176,11 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscriptionEngine.resumeSubscriptionPausedByPatient(subscription), ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @param principal
+     * @return ProductSubscriptionDto
+     */
     @PostMapping("/{id}/send")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -152,6 +194,10 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @return List<ProductSubscriptionDto>
+     * To get subscriptions waiting for doctor
+     */
     @GetMapping("/waiting-doctor")
     @PreAuthorize("hasAnyAuthority('DOCTOR')")
     @JsonView(DtoView.DoctorVisibility.class)
@@ -161,6 +207,10 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @return List<ProductSubscriptionDto>
+     * To get subscriptions with paused state
+     */
     @GetMapping("/paused")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @JsonView(DtoView.AdminVisibility.class)
@@ -172,6 +222,11 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @return List<ProductSubscriptionDto>
+     * To get all subscriptions of the particular user
+     */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -182,6 +237,11 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @return ProductSubscriptionDto
+     * To skip the next order of the subscription
+     */
     @PutMapping("/{id}/skip")
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public ProductSubscriptionDto skipRefill(@PathVariable("id") Long id) {
@@ -189,6 +249,11 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @return ProductSubscriptionDto
+     * To cancel the subscriptions
+     */
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ProductSubscriptionDto cancel(@PathVariable("id") Long id) {
@@ -197,12 +262,23 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param id
+     * @param rejectionNotes
+     * To reject the subscriptions
+     */
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasAnyAuthority('DOCTOR', 'PHARMACIST')")
     public void rejectSubscription(@PathVariable("id") Long id, @RequestBody TextDto rejectionNotes) {
         subscriptionEngine.rejectSubscription(id, rejectionNotes.getText());
     }
 
+    /**
+     * @param id
+     * @param principal
+     * @return ProductSubscriptionDto
+     * To resume paused subscription
+     */
     @PutMapping("/{id}/resume")
     @PreAuthorize("hasAnyAuthority('PATIENT', 'ADMIN')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -217,6 +293,11 @@ public class SubscriptionController {
         return parsingHelper.mapObject(subscription, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @return List<ProductSubscriptionDto>
+     * To get subscriptions of all the users
+     */
     @GetMapping("/all")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @JsonView(DtoView.AdminVisibility.class)
@@ -226,6 +307,13 @@ public class SubscriptionController {
         return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
     }
 
+    /**
+     * @param principal
+     * @param file
+     * @return Long
+     * @throws IOException
+     * To upload prescription document of the user
+     */
     @PutMapping(value = "/prescription", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public Long uploadPrescription(@AuthenticationPrincipal AwUserPrincipal principal,
@@ -234,6 +322,10 @@ public class SubscriptionController {
         return document.getId();
     }
 
+    /**
+     * @param userId
+     * To send scheduled notifications to the user
+     */
     private void scheduleShotTermNotification(final long userId) {
         User user = userService.getById(userId);
         Runnable task = () -> {

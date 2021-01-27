@@ -23,6 +23,10 @@ public class ContactUsController {
         this.notificationEngine = notificationEngine;
     }
 
+    /**
+     * @return List<ContactUsRecord>
+     * To get all the contact us records
+     */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public List<ContactUsRecord> getAll() {
@@ -31,12 +35,20 @@ public class ContactUsController {
         return list;
     }
 
+    /**
+     * @param record
+     * To save new contact us record
+     */
     @PostMapping
     public void save(@RequestBody ContactUsRecord record) {
         record = repository.save(record);
         notificationEngine.notify(CONTACT_US_REQUEST_SAVED, record);
     }
 
+    /**
+     * @param record
+     * To delete existing contact us record
+     */
     @DeleteMapping
     public void remove(@RequestBody ContactUsRecord record) {
         repository.delete(record);

@@ -19,7 +19,7 @@ import java.util.PriorityQueue;
 @Slf4j
 public class ScheduleService {
 
-    private final static long FIXED_RATE_IN_MILLISECONDS = 1000L * 60L;
+    private static final long FIXED_RATE_IN_MILLISECONDS = 1000L * 60L;
 
     @Data
     @AllArgsConstructor
@@ -34,10 +34,19 @@ public class ScheduleService {
         return queue.add(new ScheduledTask(runnable, executionDate));
     }
 
+    /**
+     * @param runnable
+     * @param delayInMilliseconds
+     * @return boolean
+     * To run the scheduled notification from the queue of notifications
+     */
     public boolean scheduleTask(Runnable runnable, long delayInMilliseconds) {
         return queue.add(new ScheduledTask(runnable, Date.from(Instant.now().plusMillis(delayInMilliseconds))));
     }
 
+    /**
+     * To check the queue and execute the task
+     */
     @Scheduled(fixedRate = FIXED_RATE_IN_MILLISECONDS)
     private void checkQueue() {
         queue.stream()

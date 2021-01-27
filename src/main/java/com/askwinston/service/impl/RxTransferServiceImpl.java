@@ -7,10 +7,12 @@ import com.askwinston.repository.RxTransferStatementRecordRepository;
 import com.askwinston.service.RxTransferService;
 import com.askwinston.service.UserService;
 import com.askwinston.web.dto.RxTransferStateRecordDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class RxTransferServiceImpl implements RxTransferService {
 
     private RxTransferStatementRecordRepository recordRepository;
@@ -25,10 +27,17 @@ public class RxTransferServiceImpl implements RxTransferService {
         this.userService = userService;
     }
 
+    /**
+     * @param dto
+     * @param userId
+     * @return RxTransferStateRecordDto
+     * To save the prescription state of the user
+     */
     @Override
     @Transactional
     public RxTransferStateRecordDto saveRxTransferState(RxTransferStateRecordDto dto, Long userId) {
         User user = userService.getById(userId);
+        log.info("Check for Rx transfer record of user with id {}", userId);
         RxTransferStateRecord record = recordRepository.findByUserId(user.getId()).orElse(null);
         if (record == null) {
             record = RxTransferStateRecord.builder()
@@ -65,6 +74,11 @@ public class RxTransferServiceImpl implements RxTransferService {
         return parsingHelper.mapObject(recordRepository.save(record), RxTransferStateRecordDto.class);
     }
 
+    /**
+     * @param userId
+     * @return RxTransferStateRecordDto
+     * To get prescription state of the user
+     */
     @Override
     @Transactional
     public RxTransferStateRecordDto getRxTransferStateByUser(Long userId) {
@@ -73,6 +87,10 @@ public class RxTransferServiceImpl implements RxTransferService {
         return result == null ? null : parsingHelper.mapObject(result, RxTransferStateRecordDto.class);
     }
 
+    /**
+     * @param userId
+     * To delete the prescription state of the user
+     */
     @Override
     @Transactional
     public void deleteRxTransferStateByUser(Long userId) {

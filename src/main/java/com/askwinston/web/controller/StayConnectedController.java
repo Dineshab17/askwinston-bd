@@ -28,6 +28,10 @@ public class StayConnectedController {
         this.parsingHelper = parsingHelper;
     }
 
+    /**
+     * @return List<StayConnectedRecordDto>
+     * To get stay connected user's details
+     */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @JsonView(DtoView.AdminVisibility.class)
@@ -38,6 +42,10 @@ public class StayConnectedController {
         return parsingHelper.mapObjects(records, StayConnectedRecordDto.class);
     }
 
+    /**
+     * @param dto
+     * To save email of the user to the stay connected contacts
+     */
     @PostMapping
     public void saveEmail(@RequestBody StayConnectedRecordDto dto) {
         if (repository.findByEmail(dto.getEmail()) == null) {
@@ -45,6 +53,11 @@ public class StayConnectedController {
         }
     }
 
+
+    /**
+     * @param dto
+     * To remove email id of the user from stay connected contact lists
+     */
     @DeleteMapping
     public void removeEmail(@RequestBody StayConnectedRecordDto dto) {
         if (repository.findByEmail(dto.getEmail()) != null) {

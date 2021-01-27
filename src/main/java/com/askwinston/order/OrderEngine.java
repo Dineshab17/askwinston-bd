@@ -17,6 +17,7 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.openhtmltopdf.slf4j.Slf4jLogger;
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer;
 import com.openhtmltopdf.util.XRLog;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -26,6 +27,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
@@ -70,20 +72,40 @@ public class OrderEngine {
         random = new Random();
     }
 
+    /**
+     * @param userId
+     * @return List<PurchaseOrder>
+     * To get all the purchase orders of the patient
+     */
     public List<PurchaseOrder> getAll(Long userId) {
+        log.info("Getting all the purchase order of the patient with id: {}", userId);
         return purchaseOrderRepository.findByUserId(userId);
     }
 
+    /**
+     * @param id
+     * @return PurchaseOrder
+     * To get Purchase order with id
+     */
     public PurchaseOrder getById(Long id) {
         return purchaseOrderRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found")
         );
     }
 
+    /**
+     * @param status
+     * @return List<PurchaseOrder>
+     * To get purchase order by status of order
+     */
     public List<PurchaseOrder> getOrdersByStatus(PurchaseOrder.Status status) {
         return purchaseOrderRepository.findByStatus(status);
     }
 
+    /**
+     * @param orderId
+     * To mark the order as rejected
+     */
     public void rejectOrder(Long orderId) {
         PurchaseOrder order = this.getById(orderId);
         try {
@@ -94,25 +116,48 @@ public class OrderEngine {
         updateStatusAndSave(order, PurchaseOrder.Status.REJECTED);
     }
 
+    /**
+     * @param orderId
+     * @param status
+     * To update the status of the order
+     */
     public void updateOrderStatus(Long orderId, PurchaseOrder.Status status) {
         PurchaseOrder order = this.getById(orderId);
         updateStatusAndSave(order, status);
     }
 
+    /**
+     * @param order
+     * @param courier
+     * @param trackingNumber
+     * To set the status of the order as delivering with tracking number and courier service information
+     */
     public void deliveringOrder(PurchaseOrder order, Courier courier, String trackingNumber) {
         order.setShippingTrackingNumber(trackingNumber);
         order.setCourier(courier);
         updateStatusAndSave(order, PurchaseOrder.Status.DELIVERING);
     }
 
+    /**
+     * @param order
+     * To update order status as paused
+     */
     public void pauseOrderByPatient(PurchaseOrder order) {
         updateStatusAndSave(order, PurchaseOrder.Status.PAUSED_BY_PATIENT);
     }
 
+    /**
+     * @param order
+     * To update the order status as in progress
+     */
     public void resumeOrderPausedByPatient(PurchaseOrder order) {
         updateStatusAndSave(order, PurchaseOrder.Status.IN_PROGRESS);
     }
 
+    /**
+     * @param order
+     * To set the status of the order as paused
+     */
     public void pauseOrder(PurchaseOrder order) {
         String transactionId = order.getTransactionId();
         order.setTransactionId(null);
@@ -130,10 +175,18 @@ public class OrderEngine {
         }
     }
 
+    /**
+     * @param order
+     * To resume the paused order
+     * and update the status of the order based on the previous state
+     * and pre authorize the payment
+     */
     public void resumeOrder(PurchaseOrder order) {
         if (order.getStatus().equals(PurchaseOrder.Status.PAUSED_RX_TRANSFER)) {
+            log.info("Updating the order with id {} status as {}", order.getId(), PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK);
             updateStatusAndSave(order, PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK);
         } else {
+            log.info("Updating the order with id {} status as {}", order.getId(), PurchaseOrder.Status.WAITING_PHARMACIST);
             updateStatusAndSave(order, PurchaseOrder.Status.WAITING_PHARMACIST);
         }
         ProductSubscription subscription = order.getSubscription();
@@ -152,6 +205,11 @@ public class OrderEngine {
         notificationEngine.notify(NotificationEventTypeContainer.ORDER_REFILL, order);
     }
 
+    /**
+     * @param order
+     * @throws PaymentException
+     * To update billing information like billing card details and billing address details into the order details
+     */
     public void fillOrderBillingInfo(PurchaseOrder order) throws PaymentException {
         if (order.getSubscription().getBillingCard() == null || !order.getSubscription().getBillingCard().getIsValid()) {
             throw new PaymentException("User have no valid billing card");
@@ -168,6 +226,11 @@ public class OrderEngine {
         }
     }
 
+    /**
+     * @param order
+     * @param newStatus
+     * To update the status of the purchase order
+     */
     protected void updateStatusAndSave(PurchaseOrder order, PurchaseOrder.Status newStatus) {
         order.setStatus(newStatus);
         if (newStatus.equals(PurchaseOrder.Status.DELIVERING)) {
@@ -188,6 +251,12 @@ public class OrderEngine {
         purchaseOrderRepository.save(order);
     }
 
+    /**
+     * @param orderId
+     * @return byte[]
+     * To generate prescription for the order as pdf
+     */
+    @SneakyThrows
     public byte[] generatePrescriptionPdf(long orderId) {
         try {
             PurchaseOrder order = getById(orderId);
@@ -210,12 +279,18 @@ public class OrderEngine {
             builder.run();
 
             return baos.toByteArray();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("PDF generation failed", e);
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 
+    /**
+     * @param template
+     * @param order
+     * @return String
+     * Substitute the order values into prescription template
+     */
     private String substituteOrderValuesForPrescriptionPdf(String template, PurchaseOrder order) {
         EntityModelMapper<PurchaseOrder> mapper = notificationEngine.getEntityMapper(PurchaseOrder.class);
         NotificationModel model = new NotificationModel();
@@ -227,6 +302,11 @@ public class OrderEngine {
 
     }
 
+    /**
+     * @param order
+     * @return String
+     * To generate order payment id
+     */
     public String getOrderPaymentId(PurchaseOrder order) {
         BigDecimal bdOrderId = new BigDecimal(order.getOrderPrice()).add(new BigDecimal(order.getSalt()));
         bdOrderId = bdOrderId.multiply(new BigDecimal(15556 * 322));

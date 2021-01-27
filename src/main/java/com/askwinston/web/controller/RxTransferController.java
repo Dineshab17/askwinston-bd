@@ -19,6 +19,12 @@ public class RxTransferController {
         this.rxTransferService = rxTransferService;
     }
 
+    /**
+     * @param dto
+     * @param principal
+     * @return RxTransferStateRecordDto
+     * To save prescription state of the patient
+     */
     @PutMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -27,6 +33,11 @@ public class RxTransferController {
         return rxTransferService.saveRxTransferState(dto, principal.getId());
     }
 
+    /**
+     * @param principal
+     * @return
+     * To get the prescription state of the user
+     */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
@@ -34,6 +45,10 @@ public class RxTransferController {
         return rxTransferService.getRxTransferStateByUser(principal.getId());
     }
 
+    /**
+     * @param principal
+     * To delete prescription state of the user
+     */
     @DeleteMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     public void deleteRxTransferState(@AuthenticationPrincipal AwUserPrincipal principal) {

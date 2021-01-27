@@ -35,6 +35,15 @@ public class GoogleStorage implements DocumentStorage {
         return "google";
     }
 
+    /**
+     * @param folder
+     * @param filename
+     * @param contentType
+     * @param inputStream
+     * @return
+     * @throws IOException
+     * To create or add new document in google storage
+     */
     @Override
     public Document create(String folder, String filename, String contentType, InputStream inputStream) throws IOException {
         String key = folder + "/" + filename;
@@ -45,6 +54,12 @@ public class GoogleStorage implements DocumentStorage {
         return new Document(contentType, filename, key, getMD5Hex(data), type());
     }
 
+    /**
+     * @param document
+     * @return DocumentResource
+     * @throws IOException
+     * To load document from google storage
+     */
     @Override
     public DocumentResource load(Document document) throws IOException {
         String key = document.getFolder() + "/" + document.getFilename();
@@ -53,12 +68,22 @@ public class GoogleStorage implements DocumentStorage {
         return new DocumentResource(document.getFilename(), document.getContentType(), blob.getContent());
     }
 
+    /**
+     * @param document
+     * @throws IOException
+     * To remove document from google storage
+     */
     @Override
     public void remove(Document document) throws IOException {
         String key = document.getFolder() + "/" + document.getFilename();
         storage.delete(bucket.getName(), key);
     }
 
+    /**
+     * @param data
+     * @return byte[]
+     * To get encrypted document
+     */
     private byte[] getMD5Hex(byte[] data) {
         MessageDigest md;
         try {

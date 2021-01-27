@@ -27,6 +27,12 @@ public class NotificationTemplateServiceImpl implements NotificationTemplateServ
         this.parsingHelper = parsingHelper;
     }
 
+    /**
+     * @param id
+     * @return NotificationTemplate
+     * @throws NotFoundException
+     * To find the notification template by id
+     */
     @Transactional
     @Override
     public NotificationTemplate findById(long id) throws NotFoundException {
@@ -35,6 +41,10 @@ public class NotificationTemplateServiceImpl implements NotificationTemplateServ
         return parsingHelper.mapObject(dto, NotificationTemplate.class);
     }
 
+    /**
+     * @return List<NotificationTemplate>
+     * To get all the notification templates
+     */
     @Transactional
     @Override
     public List<NotificationTemplate> findAll() {
@@ -43,6 +53,12 @@ public class NotificationTemplateServiceImpl implements NotificationTemplateServ
         return parsingHelper.mapObjects(dtoList, NotificationTemplate.class);
     }
 
+    /**
+     * @param type
+     * @param active
+     * @return List<NotificationTemplate>
+     * To get notification templates based on the notification event type and active status
+     */
     @Transactional
     @Override
     public List<NotificationTemplate> findAllByNotificationEventTypeAndActive(NotificationEventType<?> type, boolean active) {
@@ -50,6 +66,12 @@ public class NotificationTemplateServiceImpl implements NotificationTemplateServ
         return parsingHelper.mapObjects(dtoList, NotificationTemplate.class);
     }
 
+    /**
+     * @param name
+     * @return NotificationTemplate
+     * @throws NotFoundException
+     * To get the notification template based on the notification event name
+     */
     @Transactional
     @Override
     public NotificationTemplate findByName(String name) throws NotFoundException {
@@ -58,6 +80,11 @@ public class NotificationTemplateServiceImpl implements NotificationTemplateServ
         return parsingHelper.mapObject(dto, NotificationTemplate.class);
     }
 
+    /**
+     * @param template
+     * @return NotificationTemplate
+     * To create and save the new notification template
+     */
     @Transactional
     @Override
     public NotificationTemplate save(NotificationTemplate template) {
@@ -65,12 +92,23 @@ public class NotificationTemplateServiceImpl implements NotificationTemplateServ
         return parsingHelper.mapObject(dto, NotificationTemplate.class);
     }
 
+    /**
+     * @param id
+     * @return boolean
+     * To check whether the given notification template id exists
+     */
     @Transactional
     @Override
     public boolean existsById(Long id) {
         return repository.existsById(id);
     }
 
+    /**
+     * @param id
+     * @return NotificationTemplate
+     * @throws NotFoundException
+     * To delete provided notification template by id
+     */
     @Transactional
     @Override
     public NotificationTemplate deleteById(Long id) throws NotFoundException {
