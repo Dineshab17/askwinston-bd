@@ -1,3 +1,4 @@
+
 package com.askwinston.notification;
 
 import com.askwinston.model.NotificationTarget;

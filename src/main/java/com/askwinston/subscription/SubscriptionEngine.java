@@ -819,7 +819,7 @@ public class SubscriptionEngine {
         String sqlString = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = '" +
                 PRODUCT_SUBSCRIPTION_TABLE_NAME + "'";
         Query readQuery = entityManager.createNativeQuery(sqlString);
-        List autoIncrements = readQuery.getResultList();
+        List<Long> autoIncrements = readQuery.getResultList();
         if (autoIncrements.size() != 1) {
             log.warn("Skipping SubscriptionId initialization: Query [" + sqlString + "] returned [" +
                     autoIncrements.size() + "] results.");

@@ -4,6 +4,7 @@ import com.askwinston.model.Token;
 import com.askwinston.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import java.util.Date;
 @RestController
 @RequestMapping("/token")
 @Slf4j
+@RefreshScope
 public class TokenController {
 
     @Value("${askwinston.token.reset-password.expire-in-seconds}")

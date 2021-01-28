@@ -5,6 +5,7 @@ import com.askwinston.service.DateService;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RefreshScope
 public class PurchaseOrderModelMapper implements EntityModelMapper<PurchaseOrder> {
 
     @Value("${askwinston.domain.url}")

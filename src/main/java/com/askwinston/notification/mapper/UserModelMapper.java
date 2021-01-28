@@ -6,6 +6,7 @@ import com.askwinston.model.User;
 import com.askwinston.service.DateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RefreshScope
 public class UserModelMapper implements EntityModelMapper<User> {
 
     private DateService dateService;

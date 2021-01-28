@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriUtils;
 
 public class HttpHelper {
+    private HttpHelper(){}
 
     private static final String DEFAULT_ENCODING = "UTF-8";
 

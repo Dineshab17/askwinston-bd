@@ -5,6 +5,7 @@ import com.askwinston.model.Province;
 import com.askwinston.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,6 +20,7 @@ import java.util.*;
 
 @Slf4j
 @Service
+@RefreshScope
 public class EmailServiceImpl implements EmailService {
 
     private static final EnumSet<Province> EAST_PROVINCES = EnumSet.of(Province.ON, Province.NB,

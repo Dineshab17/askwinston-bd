@@ -15,6 +15,7 @@ import com.askwinston.web.secuity.JwtService;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +28,7 @@ import java.util.Date;
 @RestController
 @RequestMapping("/user")
 @Slf4j
+@RefreshScope
 public class UserController {
     private final UserService userService;
     private ParsingHelper parsingHelper;

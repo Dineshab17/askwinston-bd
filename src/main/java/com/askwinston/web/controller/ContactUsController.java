@@ -1,8 +1,10 @@
 package com.askwinston.web.controller;
 
+import com.askwinston.helper.ParsingHelper;
 import com.askwinston.model.ContactUsRecord;
 import com.askwinston.notification.NotificationEngine;
 import com.askwinston.repository.ContactUsRecordRepository;
+import com.askwinston.web.dto.ContactUsDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +19,12 @@ public class ContactUsController {
 
     private ContactUsRecordRepository repository;
     private NotificationEngine notificationEngine;
+    private ParsingHelper parsingHelper;
 
-    public ContactUsController(ContactUsRecordRepository repository, NotificationEngine notificationEngine) {
+    public ContactUsController(ContactUsRecordRepository repository, NotificationEngine notificationEngine, ParsingHelper parsingHelper) {
         this.repository = repository;
         this.notificationEngine = notificationEngine;
+        this.parsingHelper = parsingHelper;
     }
 
     /**
@@ -40,9 +44,9 @@ public class ContactUsController {
      * To save new contact us record
      */
     @PostMapping
-    public void save(@RequestBody ContactUsRecord record) {
-        record = repository.save(record);
-        notificationEngine.notify(CONTACT_US_REQUEST_SAVED, record);
+    public void save(@RequestBody ContactUsDto record) {
+        ContactUsRecord contactUsRecord = repository.save(parsingHelper.mapObject(record, ContactUsRecord.class));
+        notificationEngine.notify(CONTACT_US_REQUEST_SAVED, contactUsRecord);
     }
 
     /**
@@ -50,7 +54,7 @@ public class ContactUsController {
      * To delete existing contact us record
      */
     @DeleteMapping
-    public void remove(@RequestBody ContactUsRecord record) {
-        repository.delete(record);
+    public void remove(@RequestBody ContactUsDto record) {
+        repository.delete(parsingHelper.mapObject(record, ContactUsRecord.class));
     }
 }

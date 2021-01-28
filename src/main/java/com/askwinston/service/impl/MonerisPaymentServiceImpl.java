@@ -12,6 +12,7 @@ import com.askwinston.service.UserService;
 import com.askwinston.web.dto.BillingCardDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +22,7 @@ import java.math.RoundingMode;
 
 @Slf4j
 @Service
+@RefreshScope
 public class MonerisPaymentServiceImpl implements PaymentService {
 
     @Value("${moneris.test-mode:true}")
