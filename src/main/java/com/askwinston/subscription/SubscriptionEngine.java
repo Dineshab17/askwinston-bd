@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -819,7 +820,7 @@ public class SubscriptionEngine {
         String sqlString = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = '" +
                 PRODUCT_SUBSCRIPTION_TABLE_NAME + "'";
         Query readQuery = entityManager.createNativeQuery(sqlString);
-        List<Long> autoIncrements = readQuery.getResultList();
+        List<BigInteger> autoIncrements = readQuery.getResultList();
         if (autoIncrements.size() != 1) {
             log.warn("Skipping SubscriptionId initialization: Query [" + sqlString + "] returned [" +
                     autoIncrements.size() + "] results.");
