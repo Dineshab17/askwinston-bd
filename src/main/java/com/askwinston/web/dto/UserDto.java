@@ -71,6 +71,9 @@ public class UserDto {
     @JsonView(DtoView.UserVisibility.class)
     private Long insuranceDocument;
 
+    @JsonView(DtoView.UserVisibility.class)
+    private String utmSource;
+
     public interface CreatePatientValidation {
     }
 

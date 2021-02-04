@@ -10,10 +10,7 @@ import com.askwinston.notification.NotificationEngine;
 import com.askwinston.notification.NotificationEventTypeContainer;
 import com.askwinston.service.UserService;
 import com.askwinston.service.impl.DocumentService;
-import com.askwinston.web.dto.DtoView;
-import com.askwinston.web.dto.MdPostConsultNoteDto;
-import com.askwinston.web.dto.RxTransferSubscriptionDto;
-import com.askwinston.web.dto.TextDto;
+import com.askwinston.web.dto.*;
 import com.askwinston.web.secuity.AwUserPrincipal;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
@@ -72,11 +69,11 @@ public class SubscriptionController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('PATIENT')")
     @JsonView(DtoView.PatientVisibility.class)
-    public List<ProductSubscriptionDto> createSubscription(@RequestBody TextDto textDto,
+    public List<ProductSubscriptionDto> createSubscription(@RequestBody SubscriptionDto subscriptionDto,
                                                            @AuthenticationPrincipal AwUserPrincipal principal) {
         Long userId = principal.getId();
         try {
-            List<ProductSubscription> subscriptions = subscriptionEngine.checkoutCart(userId, textDto.getText());
+            List<ProductSubscription> subscriptions = subscriptionEngine.checkoutCart(userId, subscriptionDto.getText(), subscriptionDto.getUtmSource());
             scheduleShotTermNotification(userId);
             return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
         } catch (ShoppingCartException e) {

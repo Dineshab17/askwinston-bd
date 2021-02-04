@@ -47,6 +47,7 @@ public class User implements Notifiable {
     private String lastName;
     private String phone;
     private String birthday;
+    private String utmSource;
 
     @OneToOne
     @JoinColumn(name = "id_img_document")
@@ -90,6 +91,7 @@ public class User implements Notifiable {
 
     @Enumerated(EnumType.STRING)
     private DoctorSpecialisation specialisation;
+
 
     public BillingCard getPrimaryBillingCard() {
         AtomicReference<BillingCard> primaryCard = new AtomicReference<>();

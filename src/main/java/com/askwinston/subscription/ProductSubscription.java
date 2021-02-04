@@ -51,6 +51,7 @@ public class ProductSubscription implements Notifiable {
     @ManyToOne
     @JoinColumn(name = "doctor_slot_id")
     private DoctorSlot appointment;
+    private String utmSource;
 
     @OneToOne
     private Prescription prescription;

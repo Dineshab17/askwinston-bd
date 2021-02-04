@@ -100,6 +100,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .phone(user.getPhone())
                 .birthday(user.getBirthday())
+                .utmSource(user.getUtmSource())
                 .authority(User.Authority.PATIENT)
                 .shippingAddresses(new ArrayList<>())
                 .billingCards(new ArrayList<>())
@@ -384,6 +385,9 @@ public class UserServiceImpl implements UserService {
         }
         if (user.getTimezone() != null) {
             updatedUser.setTimezone(user.getTimezone());
+        }
+        if(user.getUtmSource() != null){
+            updatedUser.setUtmSource(user.getUtmSource());
         }
         log.info("Updating profile of user with user id: {}", user.getId());
         return userRepository.save(updatedUser);

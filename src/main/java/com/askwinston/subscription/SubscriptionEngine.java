@@ -220,7 +220,7 @@ public class SubscriptionEngine {
      * and remove from patient's cart repo
      */
     @Transactional
-    public List<ProductSubscription> checkoutCart(Long patientId, String promoCodeString) {
+    public List<ProductSubscription> checkoutCart(Long patientId, String promoCodeString, String utmSource) {
         PromoCode promoCode = null;
         if (promoCodeString != null && !promoCodeString.isEmpty()) {
             promoCode = promoCodeService.getByCode(promoCodeString);
@@ -233,7 +233,7 @@ public class SubscriptionEngine {
             throw new ShoppingCartException("Cart is empty");
         List<ProductSubscription> subscriptions = new ArrayList<>();
         PromoCode finalPromoCode = promoCode;
-        cartItems.forEach(cartItem -> subscriptions.add(createSubscription(patient, cartItem, finalPromoCode)));
+        cartItems.forEach(cartItem -> subscriptions.add(createSubscription(patient, cartItem, finalPromoCode, utmSource)));
         cartItemRepository.deleteAll(cartItems);
         patient.getCart().getItems().clear();
         cartRepository.save(patient.getCart());
@@ -247,11 +247,12 @@ public class SubscriptionEngine {
      * @return ProductSubscription
      * To create new subscription for the patient from the cart items
      */
-    protected ProductSubscription createSubscription(User patient, CartItem cartItem, PromoCode promoCode) {
+    protected ProductSubscription createSubscription(User patient, CartItem cartItem, PromoCode promoCode, String utmSource) {
         ProductSubscription subscription = new ProductSubscription();
         subscription.setCreationDate(LocalDateTime.now(ZoneId.of("Canada/Eastern")));
         ProductSubscriptionItem productSubscriptionItem;
         subscription.setUser(patient);
+        subscription.setUtmSource(utmSource);
         subscription.setDoctor(userService.getDefaultDoctor());
         subscription.setStatus(ProductSubscription.Status.WAITING_DOCTOR);
         subscription.setItems(new ArrayList<>());
