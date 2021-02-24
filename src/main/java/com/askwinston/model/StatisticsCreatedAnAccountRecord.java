@@ -18,4 +18,5 @@ public class StatisticsCreatedAnAccountRecord {
     private String userBirthday;
     private String userRegistrationDate;
     private String userProvince;
+    private String utmSource;
 }

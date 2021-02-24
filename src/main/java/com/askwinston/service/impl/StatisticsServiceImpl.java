@@ -75,6 +75,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         row.createCell(14).setCellValue("Shipping Address");
         row.createCell(15).setCellValue("Tracking Number");
         row.createCell(16).setCellValue("Promo Code");
+        row.createCell(17).setCellValue("UTM Source");
 
         List<OrderReportRecord> records = getShippedOrdersReport(from, to);
         records.forEach(r -> {
@@ -96,6 +97,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             row1.createCell(14).setCellValue(r.getShippingAddress());
             row1.createCell(15).setCellValue(r.getTrackingNumber());
             row1.createCell(16).setCellValue(r.getPromoCode());
+            row1.createCell(17).setCellValue(r.getUtmSource());
         });
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             book.write(outputStream);
@@ -121,6 +123,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         row.createCell(2).setCellValue("Phone Number");
         row.createCell(3).setCellValue("Province");
         row.createCell(4).setCellValue("Date of registration");
+        row.createCell(5).setCellValue("UTM Source");
         List<UserReportRecord> records = getUserReport();
         records.forEach(r -> {
             Row row1 = sheet.createRow(rows[0]++);
@@ -129,6 +132,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             row1.createCell(2).setCellValue(r.getPhone());
             row1.createCell(3).setCellValue(r.getProvince());
             row1.createCell(4).setCellValue(r.getRegistrationDate());
+            row1.createCell(5).setCellValue(r.getUtmSource());
         });
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             book.write(outputStream);
@@ -156,6 +160,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                     .phone("-")
                     .province("-")
                     .registrationDate("-")
+                    .utmSource(r.getUtmSource())
                     .build();
             resultSet.add(newRecord);
         });
@@ -166,6 +171,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                     .phone(r.getPhone())
                     .province("-")
                     .registrationDate("-")
+                    .utmSource(r.getUtmSource())
                     .build();
             resultSet.add(newRecord);
         });
@@ -176,6 +182,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                     .phone(r.getUserPhone())
                     .registrationDate(r.getUserRegistrationDate())
                     .province(r.getUserProvince())
+                    .utmSource(r.getUtmSource())
                     .build();
             resultSet.add(newRecord);
         });
@@ -224,6 +231,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                     .promoCode(o.getPromoCode() == null ? "" : o.getPromoCode())
                     .billingCard(billingCard == null ? "" :  billingCard.getId())
                     .transactionId(o.getTransactionId())
+                    .utmSource(o.getSubscription().getUtmSource())
                     .build();
 
             result.add(record);
@@ -252,6 +260,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                             .userBirthday(user.getBirthday())
                             .userRegistrationDate(user.getRegistrationDate().toString())
                             .userProvince(user.getProvince().getName())
+                            .utmSource(user.getUtmSource())
                             .build();
                     result.add(record);
                 });

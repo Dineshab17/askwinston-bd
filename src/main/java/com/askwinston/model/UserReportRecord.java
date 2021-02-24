@@ -18,6 +18,7 @@ public class UserReportRecord {
     private String phone;
     private String province;
     private String registrationDate;
+    private String utmSource;
 
     @Override
     public boolean equals(Object o) {

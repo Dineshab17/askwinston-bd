@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -35,7 +32,9 @@ public class ContactUsRecord implements Notifiable {
     private String phone;
 
     @NotNull
+    @Column( length = 100000 )
     private String message;
+    private String utmSource;
 
 }
 

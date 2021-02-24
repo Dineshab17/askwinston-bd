@@ -18,5 +18,6 @@ public class StayConnectedRecord {
     private Long id;
     private String email;
     private String name;
+    private String utmSource;
 
 }

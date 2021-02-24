@@ -28,4 +28,5 @@ public class OrderReportRecord {
     private String promoCode;
     private String billingCard;
     private String transactionId;
+    private String utmSource;
 }

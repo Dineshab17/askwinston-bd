@@ -16,4 +16,6 @@ public class StayConnectedRecordDto {
     private String email;
     @JsonView(DtoView.AdminVisibility.class)
     private String name;
+    @JsonView(DtoView.AdminVisibility.class)
+    private String utmSource;
 }
