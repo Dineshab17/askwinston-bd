@@ -45,6 +45,8 @@ public class ProductDto {
 
     private List<ProductQuantityDto> quantities;
 
+    private List<FaqDto> frequentlyAskedQuestions;
+
     public interface CreateProductValidation {
     }
 }

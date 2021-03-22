@@ -84,4 +84,8 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ProductQuantity> quantities;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Faq> frequentlyAskedQuestions;
 }

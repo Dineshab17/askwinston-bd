@@ -1,7 +1,9 @@
 package com.askwinston.service.impl;
 
+import com.askwinston.model.Faq;
 import com.askwinston.model.Product;
 import com.askwinston.model.ProductQuantity;
+import com.askwinston.repository.FaqRepository;
 import com.askwinston.repository.ProductQuantityRepository;
 import com.askwinston.repository.ProductRepository;
 import com.askwinston.service.ProductService;
@@ -19,11 +21,14 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private ProductQuantityRepository productQuantityRepository;
+    private FaqRepository faqRepository;
 
     public ProductServiceImpl(ProductRepository productRepository,
-                              ProductQuantityRepository productQuantityRepository) {
+                              ProductQuantityRepository productQuantityRepository,
+                              FaqRepository faqRepository) {
         this.productRepository = productRepository;
         this.productQuantityRepository = productQuantityRepository;
+        this.faqRepository = faqRepository;
     }
 
     /**
@@ -62,6 +67,13 @@ public class ProductServiceImpl implements ProductService {
 
         newProduct.setQuantities(quantities);
         log.info("Quantity information for product added for product with id {}", newProduct.getId());
+        List<Faq> frequentlyAskedQuestions = product.getFrequentlyAskedQuestions();
+        frequentlyAskedQuestions = frequentlyAskedQuestions.stream().map(faq->faqRepository.save(Faq.builder()
+                .question(faq.getQuestion())
+                .product(newProduct)
+                .answer(faq.getAnswer())
+                .build())).collect(Collectors.toList());
+        newProduct.setFrequentlyAskedQuestions(frequentlyAskedQuestions);
 
         return newProduct;
     }
