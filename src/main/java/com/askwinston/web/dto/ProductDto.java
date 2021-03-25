@@ -31,6 +31,8 @@ public class ProductDto {
 
     private String safetyInfo;
 
+    private String ingredient;
+
     private Product.Category category;
 
     private Product.ProblemCategory problemCategory;
