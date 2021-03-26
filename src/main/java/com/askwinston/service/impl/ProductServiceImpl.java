@@ -56,6 +56,7 @@ public class ProductServiceImpl implements ProductService {
                 .category(Product.Category.PILLS)
                 .safetyInfo(product.getSafetyInfo())
                 .ingredient(product.getIngredient())
+                .landingPageText(product.getLandingPageText())
                 .build());
         log.info("New Product created with id {}", newProduct.getId());
         List<ProductQuantity> quantities = product.getQuantities();

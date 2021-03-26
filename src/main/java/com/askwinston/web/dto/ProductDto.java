@@ -33,6 +33,8 @@ public class ProductDto {
 
     private String ingredient;
 
+    private String landingPageText;
+
     private Product.Category category;
 
     private Product.ProblemCategory problemCategory;

@@ -84,6 +84,9 @@ public class Product {
     @Column(columnDefinition = "VARCHAR(4096)")
     private String ingredient;
 
+    @Column(columnDefinition = "VARCHAR(4096)")
+    private String landingPageText;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ProductQuantity> quantities;
