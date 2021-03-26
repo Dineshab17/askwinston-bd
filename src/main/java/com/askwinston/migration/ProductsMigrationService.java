@@ -121,8 +121,9 @@ public class ProductsMigrationService {
                     .quantities(new ArrayList<>())
                     .startingAtForm("dose")
                     .startingAtPrice("3.57")
-                    .dosingTips("<ul><li>Try the low dose, once daily 5 mg pill.</li>" +
-                            "<li>To use this product in the moment, a larger dose such as a 20mg tablet is recommended and should not be combined with a low daily dose.</li></ul>")
+                    .dosingTips("<ul><li>If you are prescribed the low dose, one 5 mg pill daily is suitable.</li>" +
+                            "<li>To use this product in the moment, a larger dose such as a 20mg tablet may be recommended and should not be combined with a low daily dose.</li></ul>" +
+                            "<ul><li>Tadalafil can be taken with or without food.")
                     .productPageText("<p>This medication is great for both planned and spontaneous sexual activities. Intended to be taken 2 hours before sexual activity, Tadalafil can last up to 36 hours.<br><br>This medication can be taken as a daily regimen or when the occasion arises. For daily use, a lower dosage is recommended. Our doctors can help you understand what regimen is best for your symptoms during your consultation.</p>")
                     .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br><br>Amyl nitrite<br>Butyl nitrate</p>")
                     .landingPageText("<p>Tadalafil is the active compound in the drug popularly known as Cialis. It treats erectile dysfunction by increasing blood flow to the penis to help you get an erection faster.<br><br>This medication is intended to be taken 2 hours before sexual activity with its effects lasting up to 36 hours. This medication can be taken as a daily regimen or when the occasion arises. For daily use, a lower dosage is recommended.</p>")
@@ -174,7 +175,8 @@ public class ProductsMigrationService {
                     .startingAtForm("month")
                     .startingAtPrice("40.00")
                     .dosingTips("<ul><li>Take 1mg orally once a day.</li>" +
-                            "<li>To achieve the best results, it is recommended to use this treatment for at least 1 year.</li></ul>")
+                            "<li>To achieve the best results, it is recommended to use this treatment for at least 1 year.</li></ul>" +
+                            "<ul><li>Finasteride can be taken with or without food.</ul></li>")
                     .productPageText("<p>Deal with the root of your hair loss with Finasteride. This treatment works by blocking dihydrotestosterone (DHT), the hormone responsible for hair loss in men. With this hormone's level decreased, your hair can grow back at your balding spots.</p>")
                     .ingredient("<p>Finasteride</p>")
                     .landingPageText("<p>Finasteride is the active ingredient in Propecia used to treat all hair loss on the top of the head and receding hairlines in men.<br><br>Finasteride works by blocking DHT (Dihydrotestosterone), a hormone considered to be the cause of all male hair loss.<br><br>When there is a decreased level of DHT, it leads to an increase in hair growth on the head and slower hair loss. This leaves you with full and thick hair.</p>")
@@ -223,7 +225,9 @@ public class ProductsMigrationService {
                     .startingAtForm("outbreak")
                     .startingAtPrice("20.00")
                     .dosingTips("<ul><li>Start taking this medication at the first sign or as soon as you feel tingling, itching, burning or start noticing a blister forming. Take 2g of Valacyclovir 12 hours apart for 1 day at the first sign of an outbreak (single episode).</li>" +
-                            "<li>This medication can be used both for breakouts (as long as you start it as soon as you notice symptoms) or as a daily therapy for those who have frequent breakouts (9 or more a year) to treat oral herpes and keep breakouts from happening. Daily therapy also reduces the chances of spreading the virus to others.  Take 500 mg once daily if experiencing 9 or more outbreaks in a year.</li></ul>")
+                            "<li>This medication can be used both for breakouts (if you start it as soon as you notice symptoms) or as a daily therapy for those who have frequent breakouts (9 or more a year) to treat oral herpes and keep breakouts from happening. Daily therapy also reduces the chances of spreading the virus to others.</li></ul>" +
+                            "<li>Take 500 mg once daily if experiencing 9 or more outbreaks in a year.</li>" +
+                            "<li>Valacyclovir can be taken with or without food.</li>")
                     .productPageText("<p>Get your groove back. Whether you are newly infected or battling a recurring cold sore breakout, Valacyclovir could be the right treatment for you.<br><br> This antiviral medication works by inhibiting the spread and growth of the herpes virus and relieving your symptoms.</p>")
                     .ingredient("<p>Valacyclovir ( Valacyclovir Hydrochloride)</p>")
                     .landingPageText("<p>Valacyclovir is the active ingredient in Valtrex.It is an oral antiviral medication commonly used to treat conditions such as cold sores, genital herpes, and shingles caused by the herpes virus.<br><br>Valacyclovir works by inhibiting the growth and spread of the virus in the body, giving you enough time to fight the virus. By doing this, new sores will not form, and existing sores can heal faster, cause less pain, and itch less.<br><br>Valacyclovir doesn't prevent you from spreading the virus to others unless you are taking it on a daily basis, but it will lessen your symptoms and heal your sores.</p>")
