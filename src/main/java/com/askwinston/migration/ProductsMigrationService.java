@@ -98,8 +98,8 @@ public class ProductsMigrationService {
                     .dosingTips("<ul><li>It's recommended that you take sildenafil on an empty stomach to ensure maximum effect and absorption.</li>" +
                             "<li>This medication should only be taken once a day.</li></ul>")
                     .productPageText("<p>Whether planned or spontaneous this medication is great for a boost, taking effect within 1 hour and lasts 4-5 hours. This might be the best option if your symptoms come and go.</p>")
-                    .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br><br>Amyl nitrite<br>Butyl nitrate</p>")
-                    .landingPageText("<p>Sildenafil is the active compound in the drug popularly known as Viagra. It treats erectile dysfunction by increasing blood flow to the penis to help you get an erection faster.<br><br>\u200DIt is best to take this medication right before sexual activity. It takes about 30-60 minutes to kick in and lasts 4-5 hours. It’s called getting lucky for a reason, it’s not always planned./<p>")
+                    .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br>Amyl nitrite<br>Butyl nitrate</p>")
+                    .landingPageText("<p>Sildenafil is the active compound in the drug popularly known as Viagra. It treats erectile dysfunction by increasing blood flow to the penis to help you get an erection faster.<br><br>\u200DIt is best to take this medication right before sexual activity. It takes about 30-60 minutes to kick in and lasts 4-5 hours. It’s called getting lucky for a reason, it’s not always planned.</p>")
                     .build();
             quantities.add(new ProductQuantity(null, null, "4 pack (100mg) - $48.00", 4800L, 1, "Sildenafil 4 pack of 100 mg", ProductQuantity.Supply.DEFAULT, false, 0));
             quantities.add(new ProductQuantity(null, product, "8 pack (100mg) - $84.00", 8400L, 2, "Sildenafil 8 pack of 100 mg", ProductQuantity.Supply.DEFAULT, false, 0));
@@ -125,7 +125,7 @@ public class ProductsMigrationService {
                             "<li>To use this product in the moment, a larger dose such as a 20mg tablet may be recommended and should not be combined with a low daily dose.</li></ul>" +
                             "<ul><li>Tadalafil can be taken with or without food.")
                     .productPageText("<p>This medication is great for both planned and spontaneous sexual activities. Intended to be taken 2 hours before sexual activity, Tadalafil can last up to 36 hours.<br><br>This medication can be taken as a daily regimen or when the occasion arises. For daily use, a lower dosage is recommended. Our doctors can help you understand what regimen is best for your symptoms during your consultation.</p>")
-                    .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br><br>Amyl nitrite<br>Butyl nitrate</p>")
+                    .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br>Amyl nitrite<br>Butyl nitrate</p>")
                     .landingPageText("<p>Tadalafil is the active compound in the drug popularly known as Cialis. It treats erectile dysfunction by increasing blood flow to the penis to help you get an erection faster.<br><br>This medication is intended to be taken 2 hours before sexual activity with its effects lasting up to 36 hours. This medication can be taken as a daily regimen or when the occasion arises. For daily use, a lower dosage is recommended.</p>")
                     .build();
             quantities.add(new ProductQuantity(null, null, "4 pack (20mg) - $54.00", 5400L, 1, "Tadalafil 4 pack of 20 mg", ProductQuantity.Supply.DEFAULT, false, 0));
