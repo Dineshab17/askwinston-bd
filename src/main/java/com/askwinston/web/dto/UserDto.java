@@ -30,22 +30,22 @@ public class UserDto {
     @JsonView(DtoView.HiddenVisibility.class)
     private String password;
 
-    @NotNull(groups = {CreatePatientValidation.class})
+//    @NotNull(groups = {CreatePatientValidation.class})
     @Size(min = 1, max = 255, groups = {CreatePatientValidation.class, UpdatePatientValidation.class})
     @JsonView(DtoView.UserVisibility.class)
     private String firstName;
 
-    @NotNull(groups = {CreatePatientValidation.class})
+//    @NotNull(groups = {CreatePatientValidation.class})
     @Size(min = 1, max = 255, groups = {CreatePatientValidation.class, UpdatePatientValidation.class})
     @JsonView(DtoView.UserVisibility.class)
     private String lastName;
 
-    @NotNull(groups = {CreatePatientValidation.class})
+//    @NotNull(groups = {CreatePatientValidation.class})
     @Pattern(regexp = "[\\d\\+\\s-\\(\\)]{5,64}", groups = {CreatePatientValidation.class, UpdatePatientValidation.class})
     @JsonView(DtoView.UserVisibility.class)
     private String phone;
 
-    @NotNull(groups = {CreatePatientValidation.class})
+//    @NotNull(groups = {CreatePatientValidation.class})
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", groups = {CreatePatientValidation.class, UpdatePatientValidation.class})
     @JsonView(DtoView.UserVisibility.class)
     private String birthday;
