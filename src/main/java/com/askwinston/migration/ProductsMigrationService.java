@@ -225,7 +225,7 @@ public class ProductsMigrationService {
                     .startingAtForm("outbreak")
                     .startingAtPrice("20.00")
                     .dosingTips("<ul><li>Start taking this medication at the first sign or as soon as you feel tingling, itching, burning or start noticing a blister forming. Take 2g of Valacyclovir 12 hours apart for 1 day at the first sign of an outbreak (single episode).</li>" +
-                            "<li>This medication can be used both for breakouts (if you start it as soon as you notice symptoms) or as a daily therapy for those who have frequent breakouts (9 or more a year) to treat oral herpes and keep breakouts from happening. Daily therapy also reduces the chances of spreading the virus to others.</li></ul>" +
+                            "<li>This medication can be used both for breakouts (if you start it as soon as you notice symptoms) or as a daily therapy for those who have frequent breakouts (9 or more a year) to treat oral herpes and keep breakouts from happening. Daily therapy also reduces the chances of spreading the virus to others.</li>" +
                             "<li>Take 500 mg once daily if experiencing 9 or more outbreaks in a year.</li>" +
                             "<li>Valacyclovir can be taken with or without food.</li>")
                     .productPageText("<p>Get your groove back. Whether you are newly infected or battling a recurring cold sore breakout, Valacyclovir could be the right treatment for you.<br><br> This antiviral medication works by inhibiting the spread and growth of the herpes virus and relieving your symptoms.</p>")
