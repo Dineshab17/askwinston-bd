@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GoogleLoginDto {
     private  String tokenId;
+    private String utmSource;
 }

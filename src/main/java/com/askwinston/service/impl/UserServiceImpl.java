@@ -480,6 +480,7 @@ public class UserServiceImpl implements UserService {
             user.setSocialLoginSource("google");
             user.setPassword("");
             user.setFirstName(String.valueOf(payload.get("name")));
+            user.setUtmSource(googleLoginDto.getUtmSource());
             return  this.create(user);
         }
     }
