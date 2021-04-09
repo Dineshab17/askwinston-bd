@@ -15,6 +15,11 @@ import com.askwinston.service.EmailService;
 import com.askwinston.service.TokenService;
 import com.askwinston.service.UserService;
 import com.askwinston.subscription.ProductSubscriptionRepository;
+import com.askwinston.web.dto.GoogleLoginDto;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,6 +113,7 @@ public class UserServiceImpl implements UserService {
                 .billingCards(new ArrayList<>())
                 .province(user.getProvince())
                 .timezone("America/Toronto")
+                .socialLoginSource(user.getSocialLoginSource())
                 .registrationDate(Date.from(Instant.now()))
                 .cart(cart)
                 .build();
@@ -445,5 +453,34 @@ public class UserServiceImpl implements UserService {
         String token = tokenService.createResetPasswordToken(user.getId());
         log.info("Token generated for reset password for user with id {}", user.getId());
         emailService.sendResetPasswordEmail(email, token);
+    }
+
+    public User addGoogleUser(GoogleLoginDto googleLoginDto) throws GeneralSecurityException, IOException {
+
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
+                // Specify the CLIENT_ID of the app that accesses the backend:
+                .setAudience(Collections.singletonList("64519364784-07slcmc2v9g9o5clqd2b7vmke6suet72.apps.googleusercontent.com"))
+                // Or, if multiple clients access the backend:
+                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+                .build();
+
+
+        GoogleIdToken idToken = verifier.verify(googleLoginDto.getTokenId());
+        GoogleIdToken.Payload payload = idToken.getPayload();
+        // Print user identifier
+        String userId = payload.getSubject();
+        log.info("Google User ID: " + userId);
+        // Get profile information from payload
+        User user = this.userRepository.findByEmailAndSocialLoginSource(payload.getEmail(), "google");
+        if(user!=null){
+            return user;
+        }else {
+            user = new User();
+            user.setEmail(payload.getEmail());
+            user.setSocialLoginSource("google");
+            user.setPassword("");
+            user.setFirstName(String.valueOf(payload.get("name")));
+            return  this.create(user);
+        }
     }
 }

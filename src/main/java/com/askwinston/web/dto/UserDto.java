@@ -74,6 +74,10 @@ public class UserDto {
     @JsonView(DtoView.UserVisibility.class)
     private String utmSource;
 
+    @JsonView(DtoView.UserVisibility.class)
+    private String socialLoginSource;
+
+
     public interface CreatePatientValidation {
     }
 

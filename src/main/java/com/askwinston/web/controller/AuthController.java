@@ -3,9 +3,12 @@ package com.askwinston.web.controller;
 import com.askwinston.helper.ParsingHelper;
 import com.askwinston.model.User;
 import com.askwinston.repository.UserRepository;
+import com.askwinston.service.UserService;
+import com.askwinston.web.dto.GoogleLoginDto;
 import com.askwinston.web.dto.TokenDto;
 import com.askwinston.web.dto.UserDto;
 import com.askwinston.web.secuity.JwtService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,13 +29,15 @@ public class AuthController {
     private final JwtService jwtService;
     private ParsingHelper parsingHelper;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     public AuthController(PasswordEncoder passwordEncoder, UserRepository userRepository, JwtService jwtService,
-                          ParsingHelper parsingHelper) {
+                          ParsingHelper parsingHelper, UserService userService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.parsingHelper = parsingHelper;
+        this.userService = userService;
     }
 
 
@@ -56,5 +61,19 @@ public class AuthController {
         }
         log.error("Unauthorized User {} ", userDto.getEmail());
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * @param googleLoginDto
+     * @return
+     * This method is to login or signup with google account
+     */
+    @SneakyThrows
+    @PostMapping(value = "/google")
+    public TokenDto loginWithGoogle(@RequestBody GoogleLoginDto googleLoginDto){
+        User user = this.userService.addGoogleUser(googleLoginDto);
+        String token = jwtService.createToken(user.getId(), user.getEmail(), user.getAuthority());
+        UserDto userDto = parsingHelper.mapObject(user, UserDto.class);
+        return new TokenDto(token, userDto);
     }
 }

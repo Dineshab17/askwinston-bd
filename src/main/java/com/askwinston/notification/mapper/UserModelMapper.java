@@ -35,12 +35,12 @@ public class UserModelMapper implements EntityModelMapper<User> {
     @Override
     public void doMap(User patient, NotificationModel model, Map<String, String> additionalParams) {
         model.setEmail(patient.getEmail());
-        model.getMap().put("firstName", patient.getFirstName());
-        model.getMap().put("lastName", patient.getLastName());
-        model.getMap().put("birthday", patient.getBirthday()!=null?dateService.formatBirthday(patient.getBirthday()):null);
-        model.getMap().put("phone", patient.getPhone());
+        model.getMap().put("firstName", patient.getFirstName()!=null?patient.getFirstName():"");
+        model.getMap().put("lastName", patient.getLastName()!=null?patient.getLastName():"");
+        model.getMap().put("birthday", patient.getBirthday()!=null?dateService.formatBirthday(patient.getBirthday()):"");
+        model.getMap().put("phone", patient.getPhone()!=null?patient.getPhone():"");
         model.getMap().put("email", patient.getEmail());
-        model.getMap().put("province", patient.getProvince()!=null?patient.getProvince().toString():null);
+        model.getMap().put("province", patient.getProvince()!=null?patient.getProvince().toString():"");
         model.getMap().put("baseUrl", baseUrl);
 
         // Masked email string

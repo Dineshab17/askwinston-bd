@@ -3,7 +3,10 @@ package com.askwinston.service;
 import com.askwinston.model.BillingCard;
 import com.askwinston.model.ShippingAddress;
 import com.askwinston.model.User;
+import com.askwinston.web.dto.GoogleLoginDto;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 public interface UserService {
@@ -41,4 +44,6 @@ public interface UserService {
     void resetPassword(Long userId, String newPassword);
 
     ShippingAddress updateShippingAddress(User user, ShippingAddress dto);
+
+    User addGoogleUser(GoogleLoginDto googleLoginDto) throws GeneralSecurityException, IOException;
 }

@@ -48,6 +48,7 @@ public class User implements Notifiable {
     private String phone;
     private String birthday;
     private String utmSource;
+    private String socialLoginSource;
 
     @OneToOne
     @JoinColumn(name = "id_img_document")
