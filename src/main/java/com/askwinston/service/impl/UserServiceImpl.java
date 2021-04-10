@@ -459,7 +459,7 @@ public class UserServiceImpl implements UserService {
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 // Specify the CLIENT_ID of the app that accesses the backend:
-                .setAudience(Collections.singletonList("64519364784-07slcmc2v9g9o5clqd2b7vmke6suet72.apps.googleusercontent.com"))
+                .setAudience(Collections.singletonList("352488626350-84em0ce1n2d5kujjbtseid3l4koas88p.apps.googleusercontent.com"))
                 // Or, if multiple clients access the backend:
                 //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
                 .build();
