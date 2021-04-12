@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class SubscriptionDto {
     private String text;
     private String utmSource;
+    private boolean expressShipping;
 }

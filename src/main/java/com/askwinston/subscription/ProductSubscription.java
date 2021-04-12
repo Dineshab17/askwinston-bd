@@ -103,6 +103,8 @@ public class ProductSubscription implements Notifiable {
 
     private boolean skipNext = false;
 
+    private boolean isExpressShipping = false;
+
     public String calculateBillingAddressLine3() {
         BillingCard billingCard = getBillingCard();
         if (billingCard != null)

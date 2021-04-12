@@ -220,7 +220,7 @@ public class SubscriptionEngine {
      * and remove from patient's cart repo
      */
     @Transactional
-    public List<ProductSubscription> checkoutCart(Long patientId, String promoCodeString, String utmSource) {
+    public List<ProductSubscription> checkoutCart(Long patientId, String promoCodeString, String utmSource, boolean isExpressShipping) {
         PromoCode promoCode = null;
         if (promoCodeString != null && !promoCodeString.isEmpty()) {
             promoCode = promoCodeService.getByCode(promoCodeString);
@@ -233,7 +233,7 @@ public class SubscriptionEngine {
             throw new ShoppingCartException("Cart is empty");
         List<ProductSubscription> subscriptions = new ArrayList<>();
         PromoCode finalPromoCode = promoCode;
-        cartItems.forEach(cartItem -> subscriptions.add(createSubscription(patient, cartItem, finalPromoCode, utmSource)));
+        cartItems.forEach(cartItem -> subscriptions.add(createSubscription(patient, cartItem, finalPromoCode, utmSource, isExpressShipping)));
         cartItemRepository.deleteAll(cartItems);
         patient.getCart().getItems().clear();
         cartRepository.save(patient.getCart());
@@ -247,7 +247,7 @@ public class SubscriptionEngine {
      * @return ProductSubscription
      * To create new subscription for the patient from the cart items
      */
-    protected ProductSubscription createSubscription(User patient, CartItem cartItem, PromoCode promoCode, String utmSource) {
+    protected ProductSubscription createSubscription(User patient, CartItem cartItem, PromoCode promoCode, String utmSource, boolean isExpressShipping) {
         ProductSubscription subscription = new ProductSubscription();
         subscription.setCreationDate(LocalDateTime.now(ZoneId.of("Canada/Eastern")));
         ProductSubscriptionItem productSubscriptionItem;
@@ -285,8 +285,12 @@ public class SubscriptionEngine {
                 }
             }
         }
+
+
+        subscription.setExpressShipping(isExpressShipping);
         subscription.setDiscount(discount);
         subscription.setOrderPrice(cartPrice);
+
         productSubscriptionItemRepository.save(productSubscriptionItem);
         subscription.getItems().add(productSubscriptionItem);
         userRepository.save(patient);
@@ -428,6 +432,12 @@ public class SubscriptionEngine {
         purchaseOrder.setCartPrice(cartPrice);
         // Free shipping
         purchaseOrder.setShippingPrice(0);
+
+        //Express Shipping
+        if(subscription.isExpressShipping()){
+            purchaseOrder.setShippingPrice(999);
+        }
+
         // No taxes
         purchaseOrder.setTaxes(0);
         purchaseOrder.setPrescription(subscription.getPrescription());

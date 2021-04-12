@@ -73,7 +73,7 @@ public class SubscriptionController {
                                                            @AuthenticationPrincipal AwUserPrincipal principal) {
         Long userId = principal.getId();
         try {
-            List<ProductSubscription> subscriptions = subscriptionEngine.checkoutCart(userId, subscriptionDto.getText(), subscriptionDto.getUtmSource());
+            List<ProductSubscription> subscriptions = subscriptionEngine.checkoutCart(userId, subscriptionDto.getText(), subscriptionDto.getUtmSource(), subscriptionDto.isExpressShipping());
             scheduleShotTermNotification(userId);
             return parsingHelper.mapObjects(subscriptions, ProductSubscriptionDto.class);
         } catch (ShoppingCartException e) {
