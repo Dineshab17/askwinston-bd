@@ -474,12 +474,17 @@ public class UserServiceImpl implements UserService {
         User user = this.userRepository.findByEmailAndSocialLoginSource(payload.getEmail(), "google");
         if(user!=null){
             return user;
-        }else {
+        }
+        else if (this.userEmailExists(payload.getEmail())) {
+            log.error("Patient is already registered with this email {}", payload.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already registered");
+        } else
+        {
             user = new User();
             user.setEmail(payload.getEmail());
             user.setSocialLoginSource("google");
             user.setPassword("");
-            user.setFirstName(String.valueOf(payload.get("name")));
+//            user.setFirstName(String.valueOf(payload.get("name")));
             user.setUtmSource(googleLoginDto.getUtmSource());
             return  this.create(user);
         }
