@@ -259,7 +259,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                             .userPhone(user.getPhone())
                             .userBirthday(user.getBirthday())
                             .userRegistrationDate(user.getRegistrationDate().toString())
-                            .userProvince(user.getProvince().getName())
+                            .userProvince(user.getProvince()!=null?user.getProvince().getName():null)
                             .utmSource(user.getUtmSource())
                             .build();
                     result.add(record);

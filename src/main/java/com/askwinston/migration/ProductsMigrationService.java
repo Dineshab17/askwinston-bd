@@ -200,10 +200,10 @@ public class ProductsMigrationService {
                     .quantities(new ArrayList<>())
                     .startingAtForm("month")
                     .startingAtPrice("30.00")
-                    .dosingTips("<ul><li>Prior to application of topical tretinoin, cleanse the affected area with alcohol free soap and let it dry. Wait 20 minutes before applying the treatment. When applying the topical, gently rub it into the affected area.</li>" +
-                            "<li>Apply once daily, in the evening.</li></ul>")
+                    .dosingTips("<ul><li>Before application of topical Tretinoin, cleanse the affected area with alcohol-free soap and let it dry. Wait 20 minutes before applying the treatment. When applying the topical cream or gel, gently rub it into the affected area.</li>" +
+                            "<li>Apply once daily in the evening.</li></ul>")
                     .productPageText("<p>Skincare is healthcare. Get your skin back with Tretinoin 0.025% cream or gel, a safe and effective treatment for acne.<br><br>Tretinoin works by unclogging follicles and expelling trapped acne-causing substances from the skin. Tretinoin also stimulates rapid cell turnover, reducing the appearance of new pimples or acne scars</p>")
-                    .ingredient("<p>Clindamycin (Clindamycin Phosphate)</p>")
+                    .ingredient("<p>Tretinoin<br/>Clindamycin (Clindamycin Phosphate)</p>")
                     .landingPageText("<p>Tretinoin is classified under the category of Vitamin A-derived medications called retinoids. Retinoids stimulate the generation of new skin cells and have been proven to effectively treat skin conditions like acne, psoriasis, and skin aging.<br><br>This topical medication, also known by its name Retin-A, works to treat acne by unblocking clogged follicles. The unclogged follicles release trapped bacteria and allow absorption of further treatment with antibiotics.<br><br>Tretinoin also helps your skin control its oil (sebum) production. In addition, because Tretinoin encourages new cell growth, it reduces the appearance of acne scars.</p>")
                     .build();
             quantities.add(new ProductQuantity(null, null, "1 month supply - $30.00", 3000L, 1, "Retin-A Micro Tretinoin Gel 0.025% 30 g", ProductQuantity.Supply.PERIOD_30, false, 1));
@@ -290,7 +290,7 @@ public class ProductsMigrationService {
             String safetyInfo1 = StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
             resource = new ClassPathResource("products/safetyInfo/FinasterideSafetyInfo.html");
             String safetyInfo2 = StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
-            safetyInfo = "<h2>Minoxidil 5% Foam</h2>\n" + safetyInfo1 + "\n<h2>Finasteride</h2>\n" + safetyInfo2;
+            safetyInfo = "<h2 class='product-head'>Minoxidil 5% Foam</h2>\n" + safetyInfo1 + "\n<h2 class='product-head'>Finasteride</h2>\n" + safetyInfo2;
             product = Product.builder()
                     .name("Minoxidil 5% Foam and Finasteride")
                     .subName("")
