@@ -292,8 +292,8 @@ public class ProductsMigrationService {
             String safetyInfo2 = StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
             safetyInfo = "<h2 class='product-head'>Minoxidil 5% Foam</h2>\n" + safetyInfo1 + "\n<h2 class='product-head'>Finasteride</h2>\n" + safetyInfo2;
             product = Product.builder()
-                    .name("Minoxidil 5% Foam and Finasteride")
-                    .subName("")
+                    .name("Minoxidil 5% Foam and Finasteride Combo")
+                    .subName("Combo Pack")
                     .category(Product.Category.COMBO_PACK)
                     .problemCategory(Product.ProblemCategory.HL)
                     .description("Many patients see the best results when using both of these treatments in combination and help with hair loss on the entire head. Get the combination pack at a lower cost than buying these two products separately.")
