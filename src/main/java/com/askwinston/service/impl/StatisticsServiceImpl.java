@@ -254,7 +254,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                 .forEach(user -> {
                     StatisticsCreatedAnAccountRecord record = StatisticsCreatedAnAccountRecord.builder()
                             .userId(user.getId())
-                            .userName(user.getFirstName() + " " + user.getLastName())
+                            .userName(user.getFirstName()!=null? user.getFirstName()+ " " + user.getLastName():"")
                             .userEmail(user.getEmail())
                             .userPhone(user.getPhone())
                             .userBirthday(user.getBirthday())
