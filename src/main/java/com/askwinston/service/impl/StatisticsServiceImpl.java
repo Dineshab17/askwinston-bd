@@ -187,7 +187,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             resultSet.add(newRecord);
         });
         return resultSet.stream()
-                .sorted(Comparator.comparing(UserReportRecord::getName))
+                .sorted(Comparator.comparing(UserReportRecord::getEmail))
                 .collect(Collectors.toList());
     }
 
