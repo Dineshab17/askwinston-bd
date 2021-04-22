@@ -94,7 +94,7 @@ public class ProductsMigrationService {
                     .isCombo(false)
                     .quantities(new ArrayList<>())
                     .startingAtForm("dose")
-                    .startingAtPrice("9.00")
+                    .startingAtPrice("48.00")
                     .dosingTips("<ul><li>It's recommended that you take sildenafil on an empty stomach to ensure maximum effect and absorption.</li>" +
                             "<li>This medication should only be taken once a day.</li></ul>")
                     .productPageText("<p>Whether planned or spontaneous this medication is great for a boost, taking effect within 1 hour and lasts 4-5 hours. This might be the best option if your symptoms come and go.</p>")
@@ -120,7 +120,7 @@ public class ProductsMigrationService {
                     .isCombo(false)
                     .quantities(new ArrayList<>())
                     .startingAtForm("dose")
-                    .startingAtPrice("3.57")
+                    .startingAtPrice("54.00")
                     .dosingTips("<ul><li>If you are prescribed the low dose, one 5 mg pill daily is suitable.</li>" +
                             "<li>To use this product in the moment, a larger dose such as a 20mg tablet may be recommended and should not be combined with a low daily dose.</li></ul>" +
                             "<ul><li>Tadalafil can be taken with or without food.")
@@ -148,7 +148,7 @@ public class ProductsMigrationService {
                     .isCombo(false)
                     .quantities(new ArrayList<>())
                     .startingAtForm("month")
-                    .startingAtPrice("40.00")
+                    .startingAtPrice("50.00")
                     .dosingTips("<ul><li>Apply on the top of the head twice daily</li>" +
                             "<li>To achieve the best results, it is recommended to use this treatment for at least 16 weeks.</li></ul>")
                     .productPageText("<p>Is your hair thinning at the top of your head? This may be the solution you need.<br><br> Minoxidil 5% Foam is a topical hair loss treatment that reverses baldness by helping you grow thicker and fuller hair.</p>")
@@ -173,7 +173,7 @@ public class ProductsMigrationService {
                     .isCombo(false)
                     .quantities(new ArrayList<>())
                     .startingAtForm("month")
-                    .startingAtPrice("40.00")
+                    .startingAtPrice("45.00")
                     .dosingTips("<ul><li>Take 1mg orally once a day.</li>" +
                             "<li>To achieve the best results, it is recommended to use this treatment for at least 1 year.</li></ul>" +
                             "<ul><li>Finasteride can be taken with or without food.</ul></li>")
@@ -230,7 +230,7 @@ public class ProductsMigrationService {
                             "<li>Valacyclovir can be taken with or without food.</li>")
                     .productPageText("<p>Get your groove back. Whether you are newly infected or battling a recurring cold sore breakout, Valacyclovir could be the right treatment for you.<br><br> This antiviral medication works by inhibiting the spread and growth of the herpes virus and relieving your symptoms.</p>")
                     .ingredient("<p>Valacyclovir ( Valacyclovir Hydrochloride)</p>")
-                    .landingPageText("<p>Valacyclovir is the active ingredient in Valtrex.It is an oral antiviral medication commonly used to treat conditions such as cold sores, genital herpes, and shingles caused by the herpes virus.<br><br>Valacyclovir works by inhibiting the growth and spread of the virus in the body, giving you enough time to fight the virus. By doing this, new sores will not form, and existing sores can heal faster, cause less pain, and itch less.<br><br>Valacyclovir doesn't prevent you from spreading the virus to others unless you are taking it on a daily basis, but it will lessen your symptoms and heal your sores.</p>")
+                    .landingPageText("<p>Valacyclovir is the active ingredient in Valtrex. It is an oral antiviral medication commonly used to treat conditions such as cold sores, genital herpes, and shingles caused by the herpes virus.<br><br>Valacyclovir works by inhibiting the growth and spread of the virus in the body, giving you enough time to fight the virus. By doing this, new sores will not form, and existing sores can heal faster, cause less pain, and itch less.<br><br>Valacyclovir doesn't prevent you from spreading the virus to others unless you are taking it on a daily basis, but it will lessen your symptoms and heal your sores.</p>")
                     .build();
             quantities.add(new ProductQuantity(null, null, "1 outbreak - $20.00", 2000L, 1, "Valacyclovir 8 pills of 500 mg", ProductQuantity.Supply.OUTBREAK_1, false, 1));
             updateOrSaveProduct(product, quantities);
@@ -279,7 +279,7 @@ public class ProductsMigrationService {
                             "<li>Acyclovir cream may be applied at any time during a cold sore outbreak, but it works best if applied at the very beginning when there is tingling, redness, itching, or a bump but the cold sore has not yet formed.</li></ul>")
                     .productPageText("<p>Get your groove back, and kiss cold sores goodbye.<br><br> Acyclovir is an antiviral that has been proven to be effective in treating the virus that causes cold sores - Herpes. It works by stopping the growth of the virus. Acyclovir reduces the duration of cold sores and relieves infection symptoms.<br><br> Acyclovir topical cream is a great choice if you prefer topical treatment over oral medication valacyclovir.</p>")
                     .ingredient("<p>Acyclovir</p>")
-                    .landingPageText("<p>Acyclovir is the active ingredient in Zovirax used in treating herpes-related infections. This medication works by slowing the growth and spread of the herpes virus and prevents new sores from forming.<br><br>This antiviral topical cream effectively treats cold sores around the mouth and face and will reduce symptoms of the infection.It can be used during any stage of the breakout but works better when applied in the initial stages before the sore forms.<br><br>Acyclovir topical cream is a great choice if you prefer topical treatment over oral medication.Acyclovir topical doesn't prevent you from spreading the virus to others, but it will reduce your symptoms and heal your sores.</p>")
+                    .landingPageText("<p>Acyclovir is the active ingredient in Zovirax used in treating herpes-related infections. This medication works by slowing the growth and spread of the herpes virus and prevents new sores from forming.<br><br>This antiviral topical cream effectively treats cold sores around the mouth and face and will reduce symptoms of the infection. It can be used during any stage of the breakout but works better when applied in the initial stages before the sore forms.<br><br>Acyclovir topical cream is a great choice if you prefer topical treatment over oral medication. Acyclovir topical doesn't prevent you from spreading the virus to others, but it will reduce your symptoms and heal your sores.</p>")
                     .build();
             quantities.add(new ProductQuantity(null, null, "1 outbreak - $70.00", 7000L, 1, "Acyclovir 5% 4 g", ProductQuantity.Supply.OUTBREAK_1, false, 1));
             updateOrSaveProduct(product, quantities);
@@ -301,7 +301,7 @@ public class ProductsMigrationService {
                     .isCombo(true)
                     .quantities(new ArrayList<>())
                     .startingAtForm("month")
-                    .startingAtPrice("60.00")
+                    .startingAtPrice("70.00")
                     .dosingTips("<ul><li>Fuel hair growth AND prevent further hair loss at the same time by utilizing both products at once.</li>" +
                             "<li>Take Finasteride 1mg orally once a day and apply Minoxidil 5% foam on the crown and top of the head twice daily.</li></ul>")
                     .productPageText("<p>Combat hair loss with a double punch! This combo pack provides proven results in treating hair loss in men.<br><br> Finasteride blocks DHT (dihydrotestosterone), which is the hormone responsible for hair loss in men, while Minoxidil 5% Foam creates a favourable environment for your hair follicles to grow long and thick healthy hair.</p>")
