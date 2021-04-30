@@ -122,8 +122,8 @@ public class ProductsMigrationService {
                     .startingAtForm("dose")
                     .startingAtPrice("54.00")
                     .dosingTips("<ul><li>If you are prescribed the low dose, one 5 mg pill daily is suitable.</li>" +
-                            "<li>To use this product in the moment, a larger dose such as a 20mg tablet may be recommended and should not be combined with a low daily dose.</li></ul>" +
-                            "<ul><li>Tadalafil can be taken with or without food.")
+                            "<li>To use this product in the moment, a larger dose such as a 20mg tablet may be recommended and should not be combined with a low daily dose.</li>" +
+                            "<li>Tadalafil can be taken with or without food.</li></ul>")
                     .productPageText("<p>This medication is great for both planned and spontaneous sexual activities. Intended to be taken 2 hours before sexual activity, Tadalafil can last up to 36 hours.<br><br>This medication can be taken as a daily regimen or when the occasion arises. For daily use, a lower dosage is recommended. Our doctors can help you understand what regimen is best for your symptoms during your consultation.</p>")
                     .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br>Amyl nitrite<br>Butyl nitrate</p>")
                     .landingPageText("<p>Tadalafil is the active compound in the drug popularly known as Cialis. It treats erectile dysfunction by increasing blood flow to the penis to help you get an erection faster.<br><br>This medication is intended to be taken 2 hours before sexual activity with its effects lasting up to 36 hours. This medication can be taken as a daily regimen or when the occasion arises. For daily use, a lower dosage is recommended.</p>")
@@ -175,8 +175,8 @@ public class ProductsMigrationService {
                     .startingAtForm("month")
                     .startingAtPrice("45.00")
                     .dosingTips("<ul><li>Take 1mg orally once a day.</li>" +
-                            "<li>To achieve the best results, it is recommended to use this treatment for at least 1 year.</li></ul>" +
-                            "<ul><li>Finasteride can be taken with or without food.</ul></li>")
+                            "<li>To achieve the best results, it is recommended to use this treatment for at least 1 year.</li>" +
+                            "<li>Finasteride can be taken with or without food.</li></ul>")
                     .productPageText("<p>Deal with the root of your hair loss with Finasteride. This treatment works by blocking dihydrotestosterone (DHT), the hormone responsible for hair loss in men. With this hormone's level decreased, your hair can grow back at your balding spots.</p>")
                     .ingredient("<p>Finasteride</p>")
                     .landingPageText("<p>Finasteride is the active ingredient in Propecia used to treat all hair loss on the top of the head and receding hairlines in men.<br><br>Finasteride works by blocking DHT (Dihydrotestosterone), a hormone considered to be the cause of all male hair loss.<br><br>When there is a decreased level of DHT, it leads to an increase in hair growth on the head and slower hair loss. This leaves you with full and thick hair.</p>")
