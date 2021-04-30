@@ -45,5 +45,5 @@ public interface UserService {
 
     ShippingAddress updateShippingAddress(User user, ShippingAddress dto);
 
-    User addGoogleUser(GoogleLoginDto googleLoginDto) throws GeneralSecurityException, IOException;
+    User addGoogleUser(GoogleLoginDto googleLoginDto, boolean isLogin) throws GeneralSecurityException, IOException;
 }

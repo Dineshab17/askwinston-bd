@@ -455,7 +455,13 @@ public class UserServiceImpl implements UserService {
         emailService.sendResetPasswordEmail(email, token);
     }
 
-    public User addGoogleUser(GoogleLoginDto googleLoginDto) throws GeneralSecurityException, IOException {
+    /**
+     * @param googleLoginDto
+     * @return
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
+    public User addGoogleUser(GoogleLoginDto googleLoginDto, boolean isLogin) throws GeneralSecurityException, IOException {
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 // Specify the CLIENT_ID of the app that accesses the backend:
@@ -472,7 +478,7 @@ public class UserServiceImpl implements UserService {
         log.info("Google User ID: " + userId);
         // Get profile information from payload
         User user = this.userRepository.findByEmailAndSocialLoginSource(payload.getEmail(), "google");
-        if(user!=null){
+        if(user!=null && isLogin){
             return user;
         }
         else if (this.userEmailExists(payload.getEmail())) {

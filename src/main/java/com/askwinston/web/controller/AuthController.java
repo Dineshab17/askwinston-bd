@@ -69,9 +69,23 @@ public class AuthController {
      * This method is to login or signup with google account
      */
     @SneakyThrows
-    @PostMapping(value = "/google")
+    @PostMapping(value = "/google/login")
     public TokenDto loginWithGoogle(@RequestBody GoogleLoginDto googleLoginDto){
-        User user = this.userService.addGoogleUser(googleLoginDto);
+        User user = this.userService.addGoogleUser(googleLoginDto, true);
+        String token = jwtService.createToken(user.getId(), user.getEmail(), user.getAuthority());
+        UserDto userDto = parsingHelper.mapObject(user, UserDto.class);
+        return new TokenDto(token, userDto);
+    }
+
+    /**
+     * @param googleLoginDto
+     * @return
+     * This method is to login or signup with google account
+     */
+    @SneakyThrows
+    @PostMapping(value = "/google/register")
+    public TokenDto signupWithGoogle(@RequestBody GoogleLoginDto googleLoginDto){
+        User user = this.userService.addGoogleUser(googleLoginDto, false);
         String token = jwtService.createToken(user.getId(), user.getEmail(), user.getAuthority());
         UserDto userDto = parsingHelper.mapObject(user, UserDto.class);
         return new TokenDto(token, userDto);
