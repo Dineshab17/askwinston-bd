@@ -487,7 +487,7 @@ public class UserServiceImpl implements UserService {
         }
         else if (this.userEmailExists(payload.getEmail())) {
             log.error("Patient is already registered with this email {} via custom login", payload.getEmail());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Your Account has been already registered with Askwinston Custom Login");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Your Email id has been already registered with Askwinston");
         } else
         {
             user = new User();
