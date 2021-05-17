@@ -1,5 +1,6 @@
 package com.askwinston.service.impl;
 
+import com.askwinston.exception.AccountExistsException;
 import com.askwinston.exception.UserException;
 import com.askwinston.model.BillingCard;
 import com.askwinston.model.Cart;
@@ -487,7 +488,7 @@ public class UserServiceImpl implements UserService {
         }
         else if (this.userEmailExists(payload.getEmail())) {
             log.error("Patient is already registered with this email {} via custom login", payload.getEmail());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Your Email id has been already registered with Askwinston");
+            throw new AccountExistsException("Your Email id has been already registered with Askwinston", payload.getEmail());
         } else
         {
             user = new User();
