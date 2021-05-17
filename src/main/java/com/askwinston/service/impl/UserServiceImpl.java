@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
                 .billingCards(new ArrayList<>())
                 .province(user.getProvince())
                 .timezone("America/Toronto")
-                .socialLoginSource(user.getSocialLoginSource())
+                .loginType(user.getLoginType())
                 .registrationDate(Date.from(Instant.now()))
                 .cart(cart)
                 .build();
@@ -477,20 +477,23 @@ public class UserServiceImpl implements UserService {
         String userId = payload.getSubject();
         log.info("Google User ID: " + userId);
         // Get profile information from payload
-        User user = this.userRepository.findByEmailAndSocialLoginSource(payload.getEmail(), "google");
+        User user = this.userRepository.findByEmailAndLoginTypeIn(payload.getEmail(), Arrays.asList(User.LoginType.GOOGLE,User.LoginType.CUSTOM_GOOGLE));
         if(user!=null && isLogin){
             return user;
         }
+        else if(user!=null && !isLogin && user.getLoginType().equals(User.LoginType.GOOGLE)){
+            log.error("Patient is already registered with this email {} via google signup", payload.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use Google Login Since you have already registered with Google Signup");
+        }
         else if (this.userEmailExists(payload.getEmail())) {
-            log.error("Patient is already registered with this email {}", payload.getEmail());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email is already registered");
+            log.error("Patient is already registered with this email {} via custom login", payload.getEmail());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Your Account has been already registered with Askwinston Custom Login");
         } else
         {
             user = new User();
             user.setEmail(payload.getEmail());
-            user.setSocialLoginSource("google");
+            user.setLoginType(User.LoginType.GOOGLE);
             user.setPassword("");
-//            user.setFirstName(String.valueOf(payload.get("name")));
             user.setUtmSource(googleLoginDto.getUtmSource());
             return  this.create(user);
         }

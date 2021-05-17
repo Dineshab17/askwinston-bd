@@ -10,7 +10,9 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Entity
@@ -37,6 +39,12 @@ public class User implements Notifiable {
 
         private final Product.ProblemCategory[] categories;
     }
+    
+    public enum LoginType {
+        CUSTOM,
+        GOOGLE,
+        CUSTOM_GOOGLE;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +56,8 @@ public class User implements Notifiable {
     private String phone;
     private String birthday;
     private String utmSource;
-    private String socialLoginSource;
+    @Enumerated(EnumType.ORDINAL)
+    private LoginType loginType = LoginType.CUSTOM;
 
     @OneToOne
     @JoinColumn(name = "id_img_document")

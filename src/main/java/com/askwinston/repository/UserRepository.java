@@ -12,5 +12,5 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     List<User> findByAuthority(User.Authority authority);
 
-    User findByEmailAndSocialLoginSource(String email, String google);
+    User findByEmailAndLoginTypeIn(String email, List<User.LoginType> loginType);
 }

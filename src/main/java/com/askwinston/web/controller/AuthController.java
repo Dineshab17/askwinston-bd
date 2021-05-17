@@ -12,10 +12,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -53,6 +50,10 @@ public class AuthController {
         List<User> users = userRepository.findByEmail(userDto.getEmail());
         if (!users.isEmpty()) {
             User user = users.get(0);
+            if(user.getLoginType().equals(User.LoginType.GOOGLE)){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Use Login with google since the account was registered using google Sign-up");
+            }
             if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
                 String token = jwtService.createToken(user.getId(), user.getEmail(), user.getAuthority());
                 userDto = parsingHelper.mapObject(user, UserDto.class);
@@ -89,5 +90,23 @@ public class AuthController {
         String token = jwtService.createToken(user.getId(), user.getEmail(), user.getAuthority());
         UserDto userDto = parsingHelper.mapObject(user, UserDto.class);
         return new TokenDto(token, userDto);
+    }
+
+    @PostMapping(value= "/link-to-google")
+    public TokenDto linkWithGoogle(@RequestBody UserDto userDto){
+        log.info("Searching for a user {} ", userDto.getEmail());
+        List<User> users = userRepository.findByEmail(userDto.getEmail());
+        if (!users.isEmpty()) {
+            User user = users.get(0);
+            if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+                user.setLoginType(User.LoginType.CUSTOM_GOOGLE);
+                this.userRepository.save(user);
+                String token = jwtService.createToken(user.getId(), user.getEmail(), user.getAuthority());
+                userDto = parsingHelper.mapObject(user, UserDto.class);
+                return new TokenDto(token, userDto);
+            }
+        }
+        log.error("Unauthorized User {} ", userDto.getEmail());
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 }
