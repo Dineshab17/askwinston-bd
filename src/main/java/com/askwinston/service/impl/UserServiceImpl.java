@@ -486,6 +486,10 @@ public class UserServiceImpl implements UserService {
             log.error("Patient is already registered with this email {} via google signup", payload.getEmail());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use Google Login Since you have already registered with Google Signup");
         }
+        else if(user!=null && !isLogin && user.getLoginType().equals(User.LoginType.CUSTOM_GOOGLE)){
+            log.error("Patient is already registered with this email {}", payload.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email has been registered already. Use either Login or Login with Google");
+        }
         else if (this.userEmailExists(payload.getEmail())) {
             log.error("Patient is already registered with this email {} via custom login", payload.getEmail());
             throw new AccountExistsException("Your Email id has been already registered with Askwinston", payload.getEmail());
