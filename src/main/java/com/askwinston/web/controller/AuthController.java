@@ -52,7 +52,7 @@ public class AuthController {
             User user = users.get(0);
             if(user.getLoginType().equals(User.LoginType.GOOGLE)){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Use Login with google since the account was registered using google Sign-up");
+                        "Your account was registered using your google account, please sign in using the google log-in button");
             }
             if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
                 String token = jwtService.createToken(user.getId(), user.getEmail(), user.getAuthority());
