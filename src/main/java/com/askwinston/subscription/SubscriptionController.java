@@ -61,7 +61,7 @@ public class SubscriptionController {
     }
 
     /**
-     * @param textDto
+     * @param subscriptionDto
      * @param principal
      * @return List<ProductSubscriptionDto>
      * To product subscription for the patient from the cart items
@@ -114,13 +114,17 @@ public class SubscriptionController {
     public void confirmSubscription(@PathVariable("id") Long id,
                                     @Validated @RequestBody MdPostConsultNoteDto mdPostConsultNoteDto) {
         ProductSubscription subscription = subscriptionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found"));
+                .orElseThrow(() -> {
+                    log.error("Subscription not found for id {}", id);
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found");
+                });
         try {
             MdPostConsultNote mdPostConsultNote = parsingHelper.mapObject(mdPostConsultNoteDto,
                     MdPostConsultNote.class);
             subscriptionEngine.createPrescription(subscription, mdPostConsultNote);
             subscriptionEngine.updateSubscriptionStatus(id, ProductSubscription.Status.ACTIVE);
         } catch (Exception e) {
+            log.error("RX generation and sending failed. Please, try again later");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "RX generation and sending failed. Please, try again later");
         }
@@ -138,6 +142,7 @@ public class SubscriptionController {
         User user = userService.getById(principal.getId());
         ProductSubscription subscription = subscriptionEngine.getById(id);
         if (!subscription.getUser().getId().equals(principal.getId()) && !user.getAuthority().equals(User.Authority.ADMIN)) {
+            log.error(WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
         }
         return parsingHelper.mapObject(subscriptionEngine.pauseSubscriptionByPatient(subscription), ProductSubscriptionDto.class);
@@ -168,6 +173,7 @@ public class SubscriptionController {
         User user = userService.getById(principal.getId());
         ProductSubscription subscription = subscriptionEngine.getById(id);
         if (!subscription.getUser().getId().equals(principal.getId()) && !user.getAuthority().equals(User.Authority.ADMIN)) {
+            log.error(WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
         }
         return parsingHelper.mapObject(subscriptionEngine.resumeSubscriptionPausedByPatient(subscription), ProductSubscriptionDto.class);
@@ -185,6 +191,7 @@ public class SubscriptionController {
                                                @AuthenticationPrincipal AwUserPrincipal principal) {
         ProductSubscription subscription = subscriptionEngine.getById(id);
         if (!subscription.getUser().getId().equals(principal.getId())) {
+            log.error(WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
         }
         subscriptionEngine.processSubscription(subscription, true);
@@ -284,6 +291,7 @@ public class SubscriptionController {
         User user = userService.getById(principal.getId());
         ProductSubscription subscription = subscriptionEngine.getById(id);
         if (!subscription.getUser().getId().equals(principal.getId()) && !user.getAuthority().equals(User.Authority.ADMIN)) {
+            log.error(WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, WRONG_SUBSCRIPTION_OWNER_ERROR_MESSAGE);
         }
         subscription = subscriptionEngine.resumeSubscription(subscription);

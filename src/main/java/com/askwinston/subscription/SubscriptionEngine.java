@@ -123,6 +123,7 @@ public class SubscriptionEngine {
      */
     @Scheduled(cron = "${notification.cron:0 0 12 * * *}")
     public void checkSubscriptions() {
+        log.info("Scheduler for refill order started");
         List<ProductSubscription> subscriptions = subscriptionRepository.findAllByStatusIn(ProductSubscription.Status.ACTIVE, ProductSubscription.Status.PAUSED, ProductSubscription.Status.PAUSED_BY_PATIENT);
         subscriptions.stream()
                 .filter(s -> s.getStatus().equals(ProductSubscription.Status.ACTIVE)
@@ -178,6 +179,7 @@ public class SubscriptionEngine {
      * and send the notification to the user, if the refill left date is sooner
      */
     protected void processSubscription(ProductSubscription subscription, boolean earlyRefill) {
+        log.info("Subscription Processing for id {}", subscription.getId());
         checkPrescriptionDate(subscription);
         if (subscription.getStatus().equals(ProductSubscription.Status.ACTIVE)) {
             sendOrderToPharmacy(subscription.getOrders().stream()
@@ -197,6 +199,7 @@ public class SubscriptionEngine {
             subscriptionRepository.save(updatedSubscription);
 
             if (earlyRefill) {
+                log.info("Sending notificatin of early refill for subscription with id {}", subscription.getId());
                 notificationEngine.notify(NotificationEventTypeContainer.EARLY_REFILL_SUBMITTED, updatedSubscription);
             }
         } else {
@@ -257,10 +260,14 @@ public class SubscriptionEngine {
         subscription.setStatus(ProductSubscription.Status.WAITING_DOCTOR);
         subscription.setItems(new ArrayList<>());
         Product product = productRepository.findById(cartItem.getProductId()).orElseThrow(
-                () -> new ShoppingCartException("Product not found")
+                () -> {
+                    log.error("Product not found");
+                    throw new ShoppingCartException("Product not found");}
         );
         ProductQuantity productQuantity = productQuantityRepository.findById(cartItem.getProductQuantityId()).orElseThrow(
-                () -> new ShoppingCartException("Product quantity not found")
+                () -> {
+                    log.error("Product quantity not found");
+                    throw new ShoppingCartException("Product quantity not found");}
         );
         subscription.setPeriod(productQuantity.getSupply().getRefillPeriod());
         subscription.setTotalRefills(productQuantity.getSupply().getTotalRefills());
@@ -311,7 +318,10 @@ public class SubscriptionEngine {
             promoCode = promoCodeService.getByCode(dto.getPromoCode());
         }
         User patient = userRepository.findById(patientId).orElseThrow(
-                () -> new ShoppingCartException("User not found")
+                () -> {
+                    log.error("User with id {} not found", patientId);
+                    throw new ShoppingCartException("User not found");
+                }
         );
         ProductSubscription subscription = new ProductSubscription();
         subscription.setCreationDate(LocalDateTime.now(ZoneId.of("Canada/Eastern")));
@@ -321,10 +331,16 @@ public class SubscriptionEngine {
         subscription.setItems(new ArrayList<>());
 
         Product product = productRepository.findById(dto.getProductId()).orElseThrow(
-                () -> new ShoppingCartException("Product not found")
+                () -> {
+                    log.error("Product with id {} not found", dto.getProductId());
+                    throw new ShoppingCartException("Product not found");
+                }
         );
         ProductQuantity productQuantity = productQuantityRepository.findById(dto.getProductQuantityId()).orElseThrow(
-                () -> new ShoppingCartException("Product quantity not found")
+                () -> {
+                    log.error("Product quantity with id {} not found", dto.getProductQuantityId());
+                    throw new ShoppingCartException("Product quantity not found");
+                }
         );
         subscription.setPeriod(productQuantity.getSupply().getRefillPeriod());
         subscription.setTotalRefills(productQuantity.getSupply().getTotalRefills());
@@ -373,7 +389,9 @@ public class SubscriptionEngine {
                                                        String pharmacyPhone) {
         Date nowDate = Date.from(Instant.now());
         Document rxDocument = documentRepository.findById(rxDocumentId).orElseThrow(
-                () -> new ShoppingCartException("Document with id " + rxDocumentId + " not found")
+                () -> {
+                    log.error("Document with id " + rxDocumentId + " not found");
+                    throw new ShoppingCartException("Document with id " + rxDocumentId + " not found");}
         );
         Prescription prescription = Prescription.builder()
                 .date(nowDate)
@@ -630,7 +648,10 @@ public class SubscriptionEngine {
 
     public ProductSubscription getById(Long id) {
         return subscriptionRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found")
+                () -> {
+                    log.error("Subscription with id {} not found", id);
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found");
+                }
         );
     }
 
@@ -660,6 +681,7 @@ public class SubscriptionEngine {
             notificationEngine.notify(NotificationEventTypeContainer.SUBSCRIPTION_PAUSED_BY_USER, subscription);
             return subscription;
         } else {
+            log.error("Only subscription with 'In progress' order can be paused.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only subscription with 'In progress' order can be paused.");
         }
     }
@@ -679,6 +701,7 @@ public class SubscriptionEngine {
         if (now().isAfter(subscription.getNextOrderDate().minusDays(DELIVERY_DAYS))) {
             processSubscription(subscription);
         }
+        log.info("Paused subscription with id {} has been resumed", subscription.getId());
         notificationEngine.notify(NotificationEventTypeContainer.SUBSCRIPTION_PAUSED_BY_USER_RESUMED, subscription);
         return subscription;
     }
@@ -768,6 +791,7 @@ public class SubscriptionEngine {
         ProductSubscription subscription = this.getById(id);
         subscription.setNotes(rejectionNotes);
         updateStatusAndSave(subscription, ProductSubscription.Status.REJECTED);
+        log.info("Subscription with id {} has been rejected", id);
         return subscription;
     }
 
@@ -786,6 +810,7 @@ public class SubscriptionEngine {
         if (!subscription.getNextOrderDate().plusMonths(1).isAfter(convertToLocalDateViaInstant(subscription.getPrescription().getToDate()))) {
             subscription.setNextOrderDate(subscription.getNextOrderDate().plusMonths(1));
             subscription = subscriptionRepository.save(subscription);
+            log.info("Order with id {} next refill has been skipped", id);
             notificationEngine.notify(NotificationEventTypeContainer.AUTO_REFILL_SKIP, subscription);
         }
         return subscription;
