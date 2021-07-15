@@ -440,6 +440,7 @@ public class SubscriptionEngine {
         purchaseOrder.setShippingAddressProvince(shippingAddress.getAddressProvince());
         purchaseOrder.setShippingAddressPostalCode(shippingAddress.getAddressPostalCode());
         purchaseOrder.setShippingAddressCountry(shippingAddress.getAddressCountry());
+        purchaseOrder.setNextRefillDate(subscription.getNextOrderDate());
 
         PromoCode promoCode = subscription.getPromoCode();
         if (promoCode != null && promoCode.getType().equals(PromoCode.Type.GIFT)) {
@@ -517,6 +518,7 @@ public class SubscriptionEngine {
         Prescription prescription = subscription.getPrescription();
         prescription.setRefillsLeft(prescription.getRefillsLeft() - 1);
         prescriptionRepository.save(prescription);
+        purchaseOrder.setOrderProcessingDate(new Date());
         purchaseOrder.setStatus(PurchaseOrder.Status.WAITING_PHARMACIST);
         purchaseOrderRepository.save(purchaseOrder);
         performPayment(purchaseOrder);
@@ -558,6 +560,7 @@ public class SubscriptionEngine {
             }
             purchaseOrder.setTransactionId(paymentService.capturePayment(orderEngine.getOrderPaymentId(purchaseOrder), purchaseOrder.getTransactionId(), amount));
             purchaseOrder.setCoPay(amount);
+            purchaseOrder.setPharmacyApprovalDate(new Date());
             orderEngine.updateOrderStatus(purchaseOrder.getId(), PurchaseOrder.Status.PACKAGING);
             log.info("Purchase order with id {} is ready for packaging", purchaseOrder.getId());
         } catch (Exception e) {
@@ -751,6 +754,8 @@ public class SubscriptionEngine {
         subscription.getOrders().stream()
                 .filter(o -> o.getStatus().equals(PurchaseOrder.Status.PAUSED) || o.getStatus().equals(PurchaseOrder.Status.PAUSED_RX_TRANSFER))
                 .forEach(o -> orderEngine.resumeOrder(o));
+        subscription.setNextOrderDate(now().plusMonths(subscription.getPeriod()).plusDays(DELIVERY_DAYS));
+        subscriptionRepository.save(subscription);
         log.info("Product subscription with id {} resumed and notification sent to the user with id {}", subscription.getId(), subscription.getUser().getId());
         if (!subscription.getStatus().equals(ProductSubscription.Status.PAUSED)
                 && !subscription.getStatus().equals(ProductSubscription.Status.PAUSED_RX_TRANSFER)

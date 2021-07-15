@@ -21,4 +21,7 @@ public interface PurchaseOrderRepository extends CrudRepository<PurchaseOrder, L
 
     List<PurchaseOrder> findByStatusAndShippingDateBetween(PurchaseOrder.Status status, LocalDate shippingDate, LocalDate shippingDate2);
 
+    List<PurchaseOrder> findByUserIdAndStatusIn(Long userId, List<PurchaseOrder.Status> status);
+
+    List<PurchaseOrder> findByNumberAndStatus(Long id, PurchaseOrder.Status status);
 }

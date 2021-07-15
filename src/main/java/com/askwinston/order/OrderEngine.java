@@ -1,10 +1,7 @@
 package com.askwinston.order;
 
 import com.askwinston.exception.PaymentException;
-import com.askwinston.model.BillingCard;
-import com.askwinston.model.Courier;
-import com.askwinston.model.NotificationModel;
-import com.askwinston.model.PurchaseOrder;
+import com.askwinston.model.*;
 import com.askwinston.notification.NotificationEngine;
 import com.askwinston.notification.NotificationEventTypeContainer;
 import com.askwinston.notification.mapper.EntityModelMapper;
@@ -31,10 +28,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /*
     Class containing logic related to orders
@@ -184,8 +178,10 @@ public class OrderEngine {
     public void resumeOrder(PurchaseOrder order) {
         if (order.getStatus().equals(PurchaseOrder.Status.PAUSED_RX_TRANSFER)) {
             log.info("Updating the order with id {} status as {}", order.getId(), PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK);
+            order.setOrderProcessingDate(new Date());
             updateStatusAndSave(order, PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK);
         } else {
+            order.setOrderProcessingDate(new Date());
             log.info("Updating the order with id {} status as {}", order.getId(), PurchaseOrder.Status.WAITING_PHARMACIST);
             updateStatusAndSave(order, PurchaseOrder.Status.WAITING_PHARMACIST);
         }
@@ -311,6 +307,29 @@ public class OrderEngine {
         BigDecimal bdOrderId = new BigDecimal(order.getOrderPrice()).add(new BigDecimal(order.getSalt()));
         bdOrderId = bdOrderId.multiply(new BigDecimal(15556 * 322));
         return order.getNumber() + order.getSubNumber() + bdOrderId.toString();
+    }
+
+    public void updateShippingAddressToOrder(Long userId, ShippingAddress shippingAddress){
+        List<PurchaseOrder> purchaseOrders = this.purchaseOrderRepository.findByUserIdAndStatusIn(userId, Arrays.asList(PurchaseOrder.Status.IN_PROGRESS,
+                                                        PurchaseOrder.Status.WAITING_PHARMACIST,
+                                                        PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK));
+        purchaseOrders.forEach(order -> {
+            order.setBillingAddressCity(shippingAddress.getAddressCity());
+            order.setBillingAddressLine1(shippingAddress.getAddressLine1());
+            order.setBillingAddressLine2(shippingAddress.getAddressLine2());
+            order.setBillingAddressCountry(shippingAddress.getAddressCountry());
+            order.setBillingAddressProvince(shippingAddress.getAddressProvince());
+            order.setBillingAddressPostalCode(shippingAddress.getAddressPostalCode());
+            this.purchaseOrderRepository.save(order);
+        });
+    }
+
+    public void updateNextRefill(ProductSubscription subscription){
+        List<PurchaseOrder> orders = this.purchaseOrderRepository.findByNumberAndStatus(subscription.getId(), PurchaseOrder.Status.WAITING_PHARMACIST);
+        orders.forEach(order -> {
+            order.setNextRefillDate(subscription.getNextOrderDate());
+            this.purchaseOrderRepository.save(order);
+        });
     }
 
 }

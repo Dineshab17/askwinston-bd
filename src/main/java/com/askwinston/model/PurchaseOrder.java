@@ -68,6 +68,9 @@ public class PurchaseOrder implements Notifiable {
 
     private Date date;
     private LocalDate shippingDate;
+    private Date orderProcessingDate;
+    private LocalDate nextRefillDate;
+    private Date pharmacyApprovalDate;
 
     private String shippingAddressLine1;
     private String shippingAddressLine2;

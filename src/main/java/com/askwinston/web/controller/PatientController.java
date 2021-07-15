@@ -6,6 +6,7 @@ import com.askwinston.model.BillingCard;
 import com.askwinston.model.Document;
 import com.askwinston.model.ShippingAddress;
 import com.askwinston.model.User;
+import com.askwinston.order.OrderEngine;
 import com.askwinston.service.PaymentService;
 import com.askwinston.service.UserService;
 import com.askwinston.service.impl.DocumentService;
@@ -26,6 +27,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/patient")
@@ -36,18 +39,21 @@ public class PatientController {
     private ParsingHelper parsingHelper;
     private DocumentService documentService;
     private PaymentService paymentService;
+    private OrderEngine orderEngine;
 
     @Autowired
     public PatientController(UserService userService,
                              JwtService jwtService,
                              ParsingHelper parsingHelper,
                              DocumentService documentService,
-                             PaymentService paymentService) {
+                             PaymentService paymentService,
+                             OrderEngine orderEngine) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.parsingHelper = parsingHelper;
         this.documentService = documentService;
         this.paymentService = paymentService;
+        this.orderEngine = orderEngine;
     }
 
     /**
@@ -81,6 +87,7 @@ public class PatientController {
         User user = userService.getById(principal.getId());
         ShippingAddress newShippingAddress = userService.createShippingAddress(user,
                 parsingHelper.mapObject(shippingAddressDto, ShippingAddress.class));
+        this.orderEngine.updateShippingAddressToOrder(user.getId(), newShippingAddress);
         log.info("New Shipping Address created for the user with id{}", principal.getId());
         return parsingHelper.mapObject(newShippingAddress, ShippingAddressDto.class);
     }
@@ -129,6 +136,12 @@ public class PatientController {
     public List<ShippingAddressDto> setPrimaryShippingAddress(@PathVariable("id") long id,
                                                               @AuthenticationPrincipal AwUserPrincipal principal) {
         List<ShippingAddress> addresses = userService.setPrimaryShippingAddress(principal.getId(), id);
+        Optional<ShippingAddress> addressOptional = addresses.stream()
+                .filter(address -> Objects.equals(address.getId(), id))
+                .findAny();
+        if (addressOptional.isPresent()) {
+            this.orderEngine.updateShippingAddressToOrder(principal.getId(), addressOptional.get());
+        }
         return parsingHelper.mapObjects(addresses, ShippingAddressDto.class);
     }
 
