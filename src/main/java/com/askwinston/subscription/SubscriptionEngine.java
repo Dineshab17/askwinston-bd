@@ -49,8 +49,8 @@ import static java.time.LocalDate.now;
 @EnableScheduling
 public class SubscriptionEngine {
 
-    private static final int DELIVERY_DAYS = 7; //Order is being passed to the pharmacy seven days before the next refill date
-    private static final int DAYS_BEFORE_ORDER = 3; //Refill reminder is being sent three days before the next order date
+    private static final int DELIVERY_DAYS = 9; //Order is being passed to the pharmacy nine days before the next refill date
+    private static final int DAYS_BEFORE_ORDER = 2; //Refill reminder is being sent eleven days before the next order date
 
     private PurchaseOrderRepository purchaseOrderRepository;
     private ProductRepository productRepository;
