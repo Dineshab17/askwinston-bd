@@ -7,7 +7,9 @@ public enum Courier {
     CANADA_POST("Canada Post", "canadapost.ca", "https://www.canadapost.ca/"),
     FEDEX("FedEx", "fedex.com", "https://www.fedex.com/en-ca/home.html"),
     UPS("UPS", "ups.com", "https://www.ups.com/ca/en/Home.page"),
-    PUROLATOR("Purolator", "purolator.com", "https://www.purolator.com/en");
+    PUROLATOR("Purolator", "purolator.com", "https://www.purolator.com/en"),
+    SWIFTPOST_ICS("Swiftpost - ICS", "swiftpost.com", "https://www.icscourier.ca/online-services/parcel-tracking.aspx"),
+    SWIFTPOST_CANPAR("Swiftpost - Canpar", "swiftpost.com", "https://www.canpar.com/en/tracking/track.htm");
 
     private String name;
     private String shortName;
