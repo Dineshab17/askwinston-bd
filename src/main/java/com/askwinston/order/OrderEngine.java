@@ -309,17 +309,22 @@ public class OrderEngine {
         return order.getNumber() + order.getSubNumber() + bdOrderId.toString();
     }
 
+    /**
+     * @param userId
+     * @param shippingAddress
+     * To update new primary shipping address to the orders which are not in Packing status
+     */
     public void updateShippingAddressToOrder(Long userId, ShippingAddress shippingAddress){
         List<PurchaseOrder> purchaseOrders = this.purchaseOrderRepository.findByUserIdAndStatusIn(userId, Arrays.asList(PurchaseOrder.Status.IN_PROGRESS,
                                                         PurchaseOrder.Status.WAITING_PHARMACIST,
                                                         PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK));
         purchaseOrders.forEach(order -> {
-            order.setBillingAddressCity(shippingAddress.getAddressCity());
-            order.setBillingAddressLine1(shippingAddress.getAddressLine1());
-            order.setBillingAddressLine2(shippingAddress.getAddressLine2());
-            order.setBillingAddressCountry(shippingAddress.getAddressCountry());
-            order.setBillingAddressProvince(shippingAddress.getAddressProvince());
-            order.setBillingAddressPostalCode(shippingAddress.getAddressPostalCode());
+            order.setShippingAddressCity(shippingAddress.getAddressCity());
+            order.setShippingAddressLine1(shippingAddress.getAddressLine1());
+            order.setShippingAddressLine2(shippingAddress.getAddressLine2());
+            order.setShippingAddressCountry(shippingAddress.getAddressCountry());
+            order.setShippingAddressProvince(shippingAddress.getAddressProvince());
+            order.setShippingAddressPostalCode(shippingAddress.getAddressPostalCode());
             this.purchaseOrderRepository.save(order);
         });
     }
