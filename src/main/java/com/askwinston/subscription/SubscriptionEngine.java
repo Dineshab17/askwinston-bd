@@ -815,6 +815,12 @@ public class SubscriptionEngine {
         if (!subscription.getNextOrderDate().plusMonths(1).isAfter(convertToLocalDateViaInstant(subscription.getPrescription().getToDate()))) {
             subscription.setNextOrderDate(subscription.getNextOrderDate().plusMonths(1));
             subscription = subscriptionRepository.save(subscription);
+            // To update next refill date in purchase order
+            List<PurchaseOrder> purchaseOrders = subscription.getOrders().stream().filter(order-> order.getStatus().equals(PurchaseOrder.Status.IN_PROGRESS)).collect(Collectors.toList());
+            for (PurchaseOrder purchaseOrder : purchaseOrders) {
+                purchaseOrder.setNextRefillDate(subscription.getNextOrderDate());
+                this.purchaseOrderRepository.save(purchaseOrder);
+            }
             log.info("Order with id {} next refill has been skipped", id);
             notificationEngine.notify(NotificationEventTypeContainer.AUTO_REFILL_SKIP, subscription);
         }
