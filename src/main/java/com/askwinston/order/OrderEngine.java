@@ -175,13 +175,15 @@ public class OrderEngine {
      * and update the status of the order based on the previous state
      * and pre authorize the payment
      */
-    public void resumeOrder(PurchaseOrder order) {
+    public void resumeOrder(PurchaseOrder order, LocalDate nextRefillDate) {
         if (order.getStatus().equals(PurchaseOrder.Status.PAUSED_RX_TRANSFER)) {
             log.info("Updating the order with id {} status as {}", order.getId(), PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK);
             order.setOrderProcessingDate(new Date());
+            order.setNextRefillDate(nextRefillDate);
             updateStatusAndSave(order, PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK);
         } else {
             order.setOrderProcessingDate(new Date());
+            order.setNextRefillDate(nextRefillDate);
             log.info("Updating the order with id {} status as {}", order.getId(), PurchaseOrder.Status.WAITING_PHARMACIST);
             updateStatusAndSave(order, PurchaseOrder.Status.WAITING_PHARMACIST);
         }

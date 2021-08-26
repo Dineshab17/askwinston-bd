@@ -753,7 +753,7 @@ public class SubscriptionEngine {
         notificationEngine.notify(NotificationEventTypeContainer.SUBSCRIPTION_RESUMED, subscription);
         subscription.getOrders().stream()
                 .filter(o -> o.getStatus().equals(PurchaseOrder.Status.PAUSED) || o.getStatus().equals(PurchaseOrder.Status.PAUSED_RX_TRANSFER))
-                .forEach(o -> orderEngine.resumeOrder(o));
+                .forEach(o -> orderEngine.resumeOrder(o, now().plusMonths(subscription.getPeriod()).plusDays(DELIVERY_DAYS)));
         subscription.setNextOrderDate(now().plusMonths(subscription.getPeriod()).plusDays(DELIVERY_DAYS));
         subscriptionRepository.save(subscription);
         log.info("Product subscription with id {} resumed and notification sent to the user with id {}", subscription.getId(), subscription.getUser().getId());
