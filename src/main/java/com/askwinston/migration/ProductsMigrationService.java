@@ -37,6 +37,7 @@ public class ProductsMigrationService {
         productNamesSet.add("Clindamycin + Benzoyl Peroxide");
         productNamesSet.add("Valacyclovir");
         productNamesSet.add("Acyclovir Topical");
+        productNamesSet.add("Rupall");
     }
 
     void updateOrSaveProduct(Product newProduct, List<ProductQuantity> quantities) {
@@ -312,6 +313,35 @@ public class ProductsMigrationService {
             quantities.add(new ProductQuantity(null, null, "3 month supply - $180.00", 18000L, 2, "Finasteride 90 pills of 1 mg + Minoxidil 5% 3 x 60 g", ProductQuantity.Supply.PERIOD_90, false, 1));
             updateOrSaveProduct(product, quantities);
             quantities.clear();
+
+//            Rupall
+            resource = new ClassPathResource("products/safetyInfo/RupallSafetyInfo.html");
+            safetyInfo = StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
+            product = Product.builder()
+                    .name("Rupall")
+                    .subName("Active Ingredient is Rupatadine")
+                    .category(Product.Category.PILLS)
+                    .problemCategory(Product.ProblemCategory.AL)
+                    .description("")
+                    .safetyInfo(safetyInfo)
+                    .isCombo(false)
+                    .quantities(new ArrayList<>())
+                    .startingAtForm("dose")
+                    .startingAtPrice("40.00")
+                    .dosingTips("<ul><li>Take this medication by mouth with or without food </li>" +
+                            "<li>Use this medication regularly to get the most benefit from it</li>" +
+                            "<li>Avoid eating grapefruit or drinking grapefruit juice while using this medication</li></ul>")
+                    .productPageText("<p>As soon as the seasons change, many people start to dread the often unavoidable symptoms of allergies that accompany the season. Rupall may be the right medication for you to help manage and treat symptoms associated with allergic rhinitis.</p>")
+                    .ingredient("<p>Rupatadine fumarate</p><p>Nonmedicinal ingredients: lactose monohydrate, magnesium stearate, microcrystalline cellulose, pregelatinised maize starch, red iron oxide, and yellow iron oxide.</p>")
+                    .landingPageText("<p>Rupall (Rupatadine) is an oral medication which belongs to the class of medications called second-generation antihistamines. Rupall helps to manage and treat symptoms associated with seasonal and year-round allergies, and other skin conditions/disorders including chronic hives and itching. Symptoms can include sneezing, runny nose, itching, and tearing and redness of the eyes.</p><p>Rupall works by inhibiting the action of one of the body's natural chemicals known as histamine. Histamine is responsible for many of the symptoms caused by allergies.</p>" +
+                            "<p>Rupall works by inhibiting the action of one of the body's natural chemicals known as histamine. Histamine is responsible for many of the symptoms caused by allergies.</p>" +
+                            "<p>Rupall can be safely taken all year round or as needed depending on the allergens and frequency of symptoms experienced.</p>")
+                    .build();
+            quantities.add(new ProductQuantity(null, null, "Rupatadine 10 mg – 30 pills - $40", 4000L, 1, "Rupatadine 10 mg – 30 pills", ProductQuantity.Supply.PERIOD_30, false, 1));
+            quantities.add(new ProductQuantity(null, null, "Rupatadine 10 mg – 90 pills - $100", 10000L, 1, "Rupatadine 10 mg – 90 pills", ProductQuantity.Supply.PERIOD_90, false, 1));
+            updateOrSaveProduct(product, quantities);
+            quantities.clear();
+
 
         } catch (IOException e) {
             e.printStackTrace();

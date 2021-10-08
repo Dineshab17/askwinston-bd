@@ -27,7 +27,8 @@ public class Product {
         ED("Erectile Dysfunction"),
         HL("Hair Loss"),
         AC("Acne"),
-        CS("Cold Sores");
+        CS("Cold Sores"),
+        AL("Allergies");
 
         private String name;
 
