@@ -322,7 +322,7 @@ public class ProductsMigrationService {
                     .subName("Active Ingredient is Rupatadine")
                     .category(Product.Category.PILLS)
                     .problemCategory(Product.ProblemCategory.AL)
-                    .description("")
+                    .description("Rupall works by inhibiting the action of one of the body's natural chemicals known as histamine. Histamine is responsible for many of the symptoms caused by allergies. Rupall can be safely taken all year round or as needed depending on the allergens and frequency of symptoms experienced.")
                     .safetyInfo(safetyInfo)
                     .isCombo(false)
                     .quantities(new ArrayList<>())
