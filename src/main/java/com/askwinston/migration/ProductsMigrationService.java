@@ -102,9 +102,9 @@ public class ProductsMigrationService {
                     .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br>Amyl nitrite<br>Butyl nitrate</p>")
                     .landingPageText("<p>Sildenafil is the active compound in the drug popularly known as Viagra. It treats erectile dysfunction by increasing blood flow to the penis to help you get an erection faster.<br><br>\u200DIt is best to take this medication right before sexual activity. It takes about 30-60 minutes to kick in and lasts 4-5 hours. It’s called getting lucky for a reason, it’s not always planned.</p>")
                     .build();
-            quantities.add(new ProductQuantity(null, null, "4 pack (100mg) - $48.00", 4800L, 1, "Sildenafil 4 pack of 100 mg", ProductQuantity.Supply.DEFAULT, false, 1));
-            quantities.add(new ProductQuantity(null, product, "8 pack (100mg) - $84.00", 8400L, 2, "Sildenafil 8 pack of 100 mg", ProductQuantity.Supply.DEFAULT, false, 0));
-            quantities.add(new ProductQuantity(null, product, "12 pack (100mg) - $108.00", 10800L, 3, "Sildenafil 12 pack of 100 mg", ProductQuantity.Supply.DEFAULT, false, 0));
+            quantities.add(new ProductQuantity(null, null, "4 pill (100mg) - $48.00", 4800L, 1, "Sildenafil 4 pill of 100 mg", ProductQuantity.Supply.DEFAULT, false, 1));
+            quantities.add(new ProductQuantity(null, product, "8 pill (100mg) - $84.00", 8400L, 2, "Sildenafil 8 pill of 100 mg", ProductQuantity.Supply.DEFAULT, false, 0));
+            quantities.add(new ProductQuantity(null, product, "12 pill (100mg) - $108.00", 10800L, 3, "Sildenafil 12 pill of 100 mg", ProductQuantity.Supply.DEFAULT, false, 0));
             updateOrSaveProduct(product, quantities);
             quantities.clear();
 
@@ -129,10 +129,10 @@ public class ProductsMigrationService {
                     .ingredient("<p>Nitroglycerin<br>Isosorbide dinitrate<br>Isosorbide mononitrate<br>Amyl nitrate<br>Amyl nitrite<br>Butyl nitrate</p>")
                     .landingPageText("<p>Tadalafil is the active compound in the drug popularly known as Cialis. It treats erectile dysfunction by increasing blood flow to the penis to help you get an erection faster.<br><br>This medication is intended to be taken 2 hours before sexual activity with its effects lasting up to 36 hours. This medication can be taken as a daily regimen or when the occasion arises. For daily use, a lower dosage is recommended.</p>")
                     .build();
-            quantities.add(new ProductQuantity(null, null, "4 pack (20mg) - $54.00", 5400L, 1, "Tadalafil 4 pack of 20 mg", ProductQuantity.Supply.DEFAULT, false, 1));
-            quantities.add(new ProductQuantity(null, null, "8 pack (20mg) - $96.00", 9600L, 2, "Tadalafil 8 pack of 20 mg", ProductQuantity.Supply.DEFAULT, false, 0));
-            quantities.add(new ProductQuantity(null, null, "12 pack (20mg) - $132.00", 13200L, 3, "Tadalafil 12 pack of 20 mg", ProductQuantity.Supply.DEFAULT, false, 0));
-            quantities.add(new ProductQuantity(null, null, "28 daily pack (5mg) - $100.00", 10000L, 4, "Tadalafil 28 pack of 5 mg", ProductQuantity.Supply.DEFAULT, false, 0));
+            quantities.add(new ProductQuantity(null, null, "4 pill (20mg) - $54.00", 5400L, 1, "Tadalafil 4 pill of 20 mg", ProductQuantity.Supply.DEFAULT, false, 1));
+            quantities.add(new ProductQuantity(null, null, "8 pill (20mg) - $96.00", 9600L, 2, "Tadalafil 8 pill of 20 mg", ProductQuantity.Supply.DEFAULT, false, 0));
+            quantities.add(new ProductQuantity(null, null, "12 pill (20mg) - $132.00", 13200L, 3, "Tadalafil 12 pill of 20 mg", ProductQuantity.Supply.DEFAULT, false, 0));
+            quantities.add(new ProductQuantity(null, null, "28 daily pill (5mg) - $100.00", 10000L, 4, "Tadalafil 28 pill of 5 mg", ProductQuantity.Supply.DEFAULT, false, 0));
             updateOrSaveProduct(product, quantities);
             quantities.clear();
 
