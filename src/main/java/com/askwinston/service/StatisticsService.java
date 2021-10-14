@@ -23,4 +23,5 @@ public interface StatisticsService {
 
     List<ContactUsRecord> getContactUsStatistics();
 
+    byte[] generateSubscriptionExpiringReportXLSX();
 }

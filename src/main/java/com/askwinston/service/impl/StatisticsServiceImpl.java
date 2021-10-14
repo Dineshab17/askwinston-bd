@@ -1,10 +1,7 @@
 package com.askwinston.service.impl;
 
 import com.askwinston.model.*;
-import com.askwinston.repository.ContactUsRecordRepository;
-import com.askwinston.repository.PurchaseOrderRepository;
-import com.askwinston.repository.StayConnectedRecordRepository;
-import com.askwinston.repository.UserRepository;
+import com.askwinston.repository.*;
 import com.askwinston.service.StatisticsService;
 import com.askwinston.subscription.ProductSubscription;
 import com.askwinston.subscription.ProductSubscriptionRepository;
@@ -33,17 +30,23 @@ public class StatisticsServiceImpl implements StatisticsService {
     private StayConnectedRecordRepository stayConnectedRecordRepository;
     private ContactUsRecordRepository contactUsRecordRepository;
     private PurchaseOrderRepository orderRepository;
+    private ProductSubscriptionRepository productSubscriptionRepository;
+    private PrescriptionRepository prescriptionRepository;
 
     public StatisticsServiceImpl(ProductSubscriptionRepository subscriptionRepository,
                                  UserRepository userRepository,
                                  StayConnectedRecordRepository stayConnectedRecordRepository,
                                  ContactUsRecordRepository contactUsRecordRepository,
-                                 PurchaseOrderRepository orderRepository) {
+                                 PurchaseOrderRepository orderRepository,
+                                 ProductSubscriptionRepository productSubscriptionRepository,
+                                 PrescriptionRepository prescriptionRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.stayConnectedRecordRepository = stayConnectedRecordRepository;
         this.contactUsRecordRepository = contactUsRecordRepository;
         this.orderRepository = orderRepository;
+        this.productSubscriptionRepository = productSubscriptionRepository;
+        this.prescriptionRepository = prescriptionRepository;
     }
 
     /**
@@ -355,4 +358,74 @@ public class StatisticsServiceImpl implements StatisticsService {
                 });
         return result;
     }
+
+    /**
+     * @return byte[]
+     * To generate Excel sheet with user's product subscription expiring data
+     */
+    @Override
+    public byte[] generateSubscriptionExpiringReportXLSX() {
+        try(Workbook book = new XSSFWorkbook()) {
+            Sheet sheet = book.createSheet("Subscription Expiring Report");
+            final int[] rows = {0};
+            Row row = sheet.createRow(rows[0]++);
+            row.createCell(0).setCellValue("User Id");
+            row.createCell(1).setCellValue("User Name");
+            row.createCell(2).setCellValue("Email");
+            row.createCell(3).setCellValue("Phone Number");
+            row.createCell(4).setCellValue("Subscription Id");
+            row.createCell(5).setCellValue("Subscription Date");
+            row.createCell(6).setCellValue("Total Refills");
+            row.createCell(7).setCellValue("Refills Left");
+            row.createCell(8).setCellValue("Subscription Expiry Date");
+            List<SubscriptionExpiringReport> subscriptionExpiringReportList = getSubscriptionExpiringReport();
+            subscriptionExpiringReportList.forEach(report -> {
+                Row row1 = sheet.createRow(rows[0]++);
+                row1.createCell(0).setCellValue(report.getUserId());
+                row1.createCell(1).setCellValue(report.getUserName());
+                row1.createCell(2).setCellValue(report.getEmail());
+                row1.createCell(3).setCellValue(report.getPhoneNumber());
+                row1.createCell(4).setCellValue(report.getSubscriptionId());
+                row1.createCell(5).setCellValue(report.getSubscriptionDate());
+                row1.createCell(6).setCellValue(report.getTotalRefills());
+                row1.createCell(7).setCellValue(report.getRefillsLeft());
+                row1.createCell(8).setCellValue(report.getSubscriptionExpiryDate());
+            });
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            book.write(outputStream);
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new byte[0];
+        }
+    }
+
+    private List<SubscriptionExpiringReport> getSubscriptionExpiringReport() {
+        List<SubscriptionExpiringReport> subscriptionExpiringReports = new ArrayList<>();
+        List<ProductSubscription> productSubscriptions = new ArrayList<>();
+        this.productSubscriptionRepository.findAll().forEach(productSubscriptions::add);
+        productSubscriptions.stream().filter(subscription -> subscription.getPrescription()!=null).forEach(subscription -> {
+            SubscriptionExpiringReport subscriptionExpiringReport = new SubscriptionExpiringReport();
+            subscriptionExpiringReport.setSubscriptionId(subscription.getId());
+            Optional<User> user = this.userRepository.findById(subscription.getUser().getId());
+            if (user.isPresent()) {
+                User user1 = user.get();
+                subscriptionExpiringReport.setUserId(user1.getId());
+                subscriptionExpiringReport.setUserName(user1.getFirstName() + " " + user1.getLastName());
+                subscriptionExpiringReport.setEmail(user1.getEmail());
+                subscriptionExpiringReport.setPhoneNumber(user1.getPhone());
+            }
+            Optional<Prescription> prescription = this.prescriptionRepository.findById(subscription.getPrescription().getId());
+            if (prescription.isPresent()) {
+                Prescription prescription1 = prescription.get();
+                subscriptionExpiringReport.setSubscriptionDate(prescription1.getDate()!=null ? prescription1.getDate().toString() : "");
+                subscriptionExpiringReport.setSubscriptionExpiryDate(prescription1.getToDate()!=null ? prescription1.getToDate().toString() : "");
+                subscriptionExpiringReport.setTotalRefills(prescription1.getRefills());
+                subscriptionExpiringReport.setRefillsLeft(prescription1.getRefillsLeft());
+            }
+            subscriptionExpiringReports.add(subscriptionExpiringReport);
+        });
+        return subscriptionExpiringReports;
+    }
+
 }
