@@ -46,4 +46,14 @@ public class StatisticsController {
     public ResponseEntity<InputStreamResource> getNewUsersReport() {
         return HttpHelper.fileDownload(new DocumentResource("New_users_report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", statisticsService.generateNewUsersReportXLSX()));
     }
+
+    /**
+     * @return ResponseEntity<InputStreamResource>
+     * To generate and download user's subscription expiring data
+     */
+    @GetMapping("/subscription-expiring")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<InputStreamResource> getSubscriptionExpiringReport() {
+        return HttpHelper.fileDownload(new DocumentResource("Subscription_report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", statisticsService.generateSubscriptionExpiringReportXLSX()));
+    }
 }
