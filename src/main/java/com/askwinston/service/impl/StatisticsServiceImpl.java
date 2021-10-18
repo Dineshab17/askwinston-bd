@@ -400,7 +400,12 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
     }
 
+    /**
+     * @return List<SubscriptionExpiringReport>
+     * This method to get user's product subscription expiring data within 30 days from today
+     */
     private List<SubscriptionExpiringReport> getSubscriptionExpiringReport() {
+        log.info("Getting user's product subscription expiring...");
         List<SubscriptionExpiringReport> subscriptionExpiringReports = new ArrayList<>();
         List<ProductSubscription> productSubscriptions = new ArrayList<>();
         this.productSubscriptionRepository.findAll().forEach(productSubscriptions::add);
@@ -424,6 +429,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                 subscriptionExpiringReport.setRefillsLeft(prescription1.getRefillsLeft());
                 boolean isExpiring = this.checkExpiringDate(prescription1);
                 if (isExpiring) {
+                    log.info("Getting user's product subscription expiring export...");
                     subscriptionExpiringReports.add(subscriptionExpiringReport);
                 }
             }
@@ -431,7 +437,12 @@ public class StatisticsServiceImpl implements StatisticsService {
         return subscriptionExpiringReports;
     }
 
+    /**
+     * @return Boolean
+     * This method to check subscription Expiry Date within 30 days from today
+     */
     private boolean checkExpiringDate(Prescription prescription) {
+        log.info("Checking user product subscription expiring date...");
         Date subscriptionExpiryDate = prescription.getToDate();
         Date currentDate = new Date();
         Calendar cal = Calendar.getInstance();
