@@ -337,8 +337,8 @@ public class ProductsMigrationService {
                             "<p>Rupall works by inhibiting the action of one of the body's natural chemicals known as histamine. Histamine is responsible for many of the symptoms caused by allergies.</p>" +
                             "<p>Rupall can be safely taken all year round or as needed depending on the allergens and frequency of symptoms experienced.</p>")
                     .build();
-            quantities.add(new ProductQuantity(null, null, "Rupatadine 10 mg – 30 pills - $40", 4000L, 1, "Rupatadine 10 mg – 30 pills", ProductQuantity.Supply.PERIOD_30, false, 1));
-            quantities.add(new ProductQuantity(null, null, "Rupatadine 10 mg – 90 pills - $100", 10000L, 1, "Rupatadine 10 mg – 90 pills", ProductQuantity.Supply.PERIOD_90, false, 1));
+            quantities.add(new ProductQuantity(null, null, "30 pills (10mg) - $40", 4000L, 1, "Rupatadine 30 pills of 10 mg", ProductQuantity.Supply.PERIOD_30, false, 1));
+            quantities.add(new ProductQuantity(null, null, "90 pills (10mg) - $100", 10000L, 1, "Rupatadine 90 pills of 10 mg", ProductQuantity.Supply.PERIOD_90, false, 1));
             updateOrSaveProduct(product, quantities);
             quantities.clear();
 
