@@ -422,10 +422,27 @@ public class StatisticsServiceImpl implements StatisticsService {
                 subscriptionExpiringReport.setSubscriptionExpiryDate(prescription1.getToDate()!=null ? prescription1.getToDate().toString() : "");
                 subscriptionExpiringReport.setTotalRefills(prescription1.getRefills());
                 subscriptionExpiringReport.setRefillsLeft(prescription1.getRefillsLeft());
+                boolean isExpiring = this.checkExpiringDate(prescription1);
+                if (isExpiring) {
+                    subscriptionExpiringReports.add(subscriptionExpiringReport);
+                }
             }
-            subscriptionExpiringReports.add(subscriptionExpiringReport);
         });
         return subscriptionExpiringReports;
+    }
+
+    private boolean checkExpiringDate(Prescription prescription) {
+        Date subscriptionExpiryDate = prescription.getToDate();
+        Date currentDate = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 30);
+        Date expireDate = cal.getTime();
+        boolean isExpiring = false;
+        if (subscriptionExpiryDate != null) {
+            isExpiring = (subscriptionExpiryDate.equals(currentDate) || subscriptionExpiryDate.after(currentDate)) &&
+                    (subscriptionExpiryDate.equals(expireDate) || subscriptionExpiryDate.before(expireDate));
+        }
+        return isExpiring;
     }
 
 }
