@@ -15,10 +15,13 @@ public class SubscriptionExpiringReport {
     private Long userId;
     private String userName;
     private String email;
+    private String address;
+    private String product;
     private String phoneNumber;
     private Long subscriptionId;
     private String subscriptionDate;
     private String subscriptionExpiryDate;
     private Integer totalRefills;
     private Integer refillsLeft;
+    private String expiring;
 }

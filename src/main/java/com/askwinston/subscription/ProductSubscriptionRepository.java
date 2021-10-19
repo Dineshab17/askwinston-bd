@@ -1,8 +1,10 @@
 package com.askwinston.subscription;
 
 import com.askwinston.model.User;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ProductSubscriptionRepository extends CrudRepository<ProductSubscription, Long> {
@@ -14,4 +16,6 @@ public interface ProductSubscriptionRepository extends CrudRepository<ProductSub
     List<ProductSubscription> findAllByStatus(ProductSubscription.Status status);
 
     List<ProductSubscription> findAllByStatusIn(ProductSubscription.Status... status);
+
+    ProductSubscription findByPrescriptionId(Long id);
 }

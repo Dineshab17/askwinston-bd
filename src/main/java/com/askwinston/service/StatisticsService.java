@@ -3,6 +3,7 @@ package com.askwinston.service;
 import com.askwinston.model.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface StatisticsService {
@@ -23,5 +24,5 @@ public interface StatisticsService {
 
     List<ContactUsRecord> getContactUsStatistics();
 
-    byte[] generateSubscriptionExpiringReportXLSX();
+    byte[] generateSubscriptionExpiringReportXLSX(Date from, Date to);
 }

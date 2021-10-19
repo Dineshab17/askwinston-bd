@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PurchaseOrderItemRepository extends CrudRepository<PurchaseOrderItem, Long> {
+    PurchaseOrderItem findByPurchaseOrderId(Long id);
 }

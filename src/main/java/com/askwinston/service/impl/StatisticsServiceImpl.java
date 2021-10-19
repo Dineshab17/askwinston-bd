@@ -32,6 +32,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     private PurchaseOrderRepository orderRepository;
     private ProductSubscriptionRepository productSubscriptionRepository;
     private PrescriptionRepository prescriptionRepository;
+    private PurchaseOrderRepository purchaseOrderRepository;
+    private PurchaseOrderItemRepository purchaseOrderItemRepository;
 
     public StatisticsServiceImpl(ProductSubscriptionRepository subscriptionRepository,
                                  UserRepository userRepository,
@@ -39,7 +41,9 @@ public class StatisticsServiceImpl implements StatisticsService {
                                  ContactUsRecordRepository contactUsRecordRepository,
                                  PurchaseOrderRepository orderRepository,
                                  ProductSubscriptionRepository productSubscriptionRepository,
-                                 PrescriptionRepository prescriptionRepository) {
+                                 PrescriptionRepository prescriptionRepository,
+                                 PurchaseOrderRepository purchaseOrderRepository,
+                                 PurchaseOrderItemRepository purchaseOrderItemRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.stayConnectedRecordRepository = stayConnectedRecordRepository;
@@ -47,6 +51,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         this.orderRepository = orderRepository;
         this.productSubscriptionRepository = productSubscriptionRepository;
         this.prescriptionRepository = prescriptionRepository;
+        this.purchaseOrderRepository = purchaseOrderRepository;
+        this.purchaseOrderItemRepository = purchaseOrderItemRepository;
     }
 
     /**
@@ -364,32 +370,38 @@ public class StatisticsServiceImpl implements StatisticsService {
      * To generate Excel sheet with user's product subscription expiring data
      */
     @Override
-    public byte[] generateSubscriptionExpiringReportXLSX() {
+    public byte[] generateSubscriptionExpiringReportXLSX(Date from, Date to) {
         try(Workbook book = new XSSFWorkbook()) {
             Sheet sheet = book.createSheet("Subscription Expiring Report");
             final int[] rows = {0};
             Row row = sheet.createRow(rows[0]++);
-            row.createCell(0).setCellValue("User Id");
-            row.createCell(1).setCellValue("User Name");
+            row.createCell(0).setCellValue("Customer Id");
+            row.createCell(1).setCellValue("Customer Name");
             row.createCell(2).setCellValue("Email");
             row.createCell(3).setCellValue("Phone Number");
-            row.createCell(4).setCellValue("Subscription Id");
-            row.createCell(5).setCellValue("Subscription Date");
-            row.createCell(6).setCellValue("Total Refills");
-            row.createCell(7).setCellValue("Refills Left");
-            row.createCell(8).setCellValue("Subscription Expiry Date");
-            List<SubscriptionExpiringReport> subscriptionExpiringReportList = getSubscriptionExpiringReport();
+            row.createCell(4).setCellValue("Address");
+            row.createCell(5).setCellValue("Product");
+            row.createCell(6).setCellValue("Subscription Id");
+            row.createCell(7).setCellValue("Subscription Date");
+            row.createCell(8).setCellValue("Total Refills");
+            row.createCell(9).setCellValue("Refills Left");
+            row.createCell(10).setCellValue("Subscription Expiry Date");
+            row.createCell(11).setCellValue("Subscription Expiration Status");
+            List<SubscriptionExpiringReport> subscriptionExpiringReportList = getSubscriptionExpiringReport(from,to);
             subscriptionExpiringReportList.forEach(report -> {
                 Row row1 = sheet.createRow(rows[0]++);
                 row1.createCell(0).setCellValue(report.getUserId());
                 row1.createCell(1).setCellValue(report.getUserName());
                 row1.createCell(2).setCellValue(report.getEmail());
                 row1.createCell(3).setCellValue(report.getPhoneNumber());
-                row1.createCell(4).setCellValue(report.getSubscriptionId());
-                row1.createCell(5).setCellValue(report.getSubscriptionDate());
-                row1.createCell(6).setCellValue(report.getTotalRefills());
-                row1.createCell(7).setCellValue(report.getRefillsLeft());
-                row1.createCell(8).setCellValue(report.getSubscriptionExpiryDate());
+                row1.createCell(4).setCellValue(report.getAddress());
+                row1.createCell(5).setCellValue(report.getProduct());
+                row1.createCell(6).setCellValue(report.getSubscriptionId());
+                row1.createCell(7).setCellValue(report.getSubscriptionDate());
+                row1.createCell(8).setCellValue(report.getTotalRefills());
+                row1.createCell(9).setCellValue(report.getRefillsLeft());
+                row1.createCell(10).setCellValue(report.getSubscriptionExpiryDate());
+                row1.createCell(11).setCellValue(report.getExpiring());
             });
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             book.write(outputStream);
@@ -404,34 +416,46 @@ public class StatisticsServiceImpl implements StatisticsService {
      * @return List<SubscriptionExpiringReport>
      * This method to get user's product subscription expiring data within 30 days from today
      */
-    private List<SubscriptionExpiringReport> getSubscriptionExpiringReport() {
+    private List<SubscriptionExpiringReport> getSubscriptionExpiringReport(Date from, Date to) {
         log.info("Getting user's product subscription expiring...");
         List<SubscriptionExpiringReport> subscriptionExpiringReports = new ArrayList<>();
-        List<ProductSubscription> productSubscriptions = new ArrayList<>();
-        this.productSubscriptionRepository.findAll().forEach(productSubscriptions::add);
-        productSubscriptions.stream().filter(subscription -> subscription.getPrescription()!=null).forEach(subscription -> {
+        List<Prescription> prescriptions = this.prescriptionRepository.findByToDateBetween(from,to);
+        prescriptions.forEach(prescription -> {
             SubscriptionExpiringReport subscriptionExpiringReport = new SubscriptionExpiringReport();
-            subscriptionExpiringReport.setSubscriptionId(subscription.getId());
-            Optional<User> user = this.userRepository.findById(subscription.getUser().getId());
-            if (user.isPresent()) {
-                User user1 = user.get();
-                subscriptionExpiringReport.setUserId(user1.getId());
-                subscriptionExpiringReport.setUserName(user1.getFirstName() + " " + user1.getLastName());
-                subscriptionExpiringReport.setEmail(user1.getEmail());
-                subscriptionExpiringReport.setPhoneNumber(user1.getPhone());
-            }
-            Optional<Prescription> prescription = this.prescriptionRepository.findById(subscription.getPrescription().getId());
-            if (prescription.isPresent()) {
-                Prescription prescription1 = prescription.get();
-                subscriptionExpiringReport.setSubscriptionDate(prescription1.getDate()!=null ? prescription1.getDate().toString() : "");
-                subscriptionExpiringReport.setSubscriptionExpiryDate(prescription1.getToDate()!=null ? prescription1.getToDate().toString() : "");
-                subscriptionExpiringReport.setTotalRefills(prescription1.getRefills());
-                subscriptionExpiringReport.setRefillsLeft(prescription1.getRefillsLeft());
-                boolean isExpiring = this.checkExpiringDate(prescription1);
-                if (isExpiring) {
-                    log.info("Getting user's product subscription expiring export...");
-                    subscriptionExpiringReports.add(subscriptionExpiringReport);
+            ProductSubscription subscription = this.productSubscriptionRepository.findByPrescriptionId(prescription.getId());
+            if (subscription!=null) {
+                List<PurchaseOrder> purchaseOrders = this.purchaseOrderRepository.findBySubscriptionId(subscription.getId());
+                purchaseOrders.forEach(purchaseOrder -> {
+                    PurchaseOrderItem purchaseOrderItem = this.purchaseOrderItemRepository.findByPurchaseOrderId(purchaseOrder.getId());
+                    subscriptionExpiringReport.setProduct(purchaseOrderItem.getProductName());
+                });
+                subscriptionExpiringReport.setSubscriptionId(subscription.getId());
+                subscriptionExpiringReport.setSubscriptionDate(prescription.getDate() != null ? prescription.getDate().toString() : "");
+                subscriptionExpiringReport.setSubscriptionExpiryDate(prescription.getToDate() != null ? prescription.getToDate().toString() : "");
+                subscriptionExpiringReport.setTotalRefills(prescription.getRefills());
+                subscriptionExpiringReport.setRefillsLeft(prescription.getRefillsLeft());
+                Optional<User> user = this.userRepository.findById(subscription.getUser().getId());
+                if (user.isPresent()) {
+                    User user1 = user.get();
+                    subscriptionExpiringReport.setUserId(user1.getId());
+                    subscriptionExpiringReport.setUserName(user1.getFirstName() + " " + user1.getLastName());
+                    subscriptionExpiringReport.setEmail(user1.getEmail());
+                    subscriptionExpiringReport.setPhoneNumber(user1.getPhone());
+                    List<ShippingAddress> shippingAddresses = user1.getShippingAddresses();
+                    shippingAddresses.stream().filter(address -> Boolean.TRUE.equals(address.isPrimary())).forEach(address -> {
+                        String customerAddress = address.getAddressLine1()+ " "+address.getAddressLine2()+" "+address.getAddressCity()+" "+address.getAddressProvince()+" "+address.getAddressCountry()+" "+address.getAddressPostalCode();
+                        subscriptionExpiringReport.setAddress(customerAddress);
+                    });
                 }
+                boolean isExpiring = this.checkExpiringDate(prescription);
+                if (isExpiring) {
+                    log.info("Getting user's product subscription expiring...");
+                    subscriptionExpiringReport.setExpiring("Expiring");
+                } else {
+                    log.info("Getting user's product subscription expired...");
+                    subscriptionExpiringReport.setExpiring("Expired");
+                }
+                subscriptionExpiringReports.add(subscriptionExpiringReport);
             }
         });
         return subscriptionExpiringReports;
@@ -439,19 +463,15 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     /**
      * @return Boolean
-     * This method to check subscription Expiry Date within 30 days from today
+     * This method to check subscription Expiry Date within subscriptionExpiryDate from today
      */
     private boolean checkExpiringDate(Prescription prescription) {
         log.info("Checking user product subscription expiring date...");
         Date subscriptionExpiryDate = prescription.getToDate();
         Date currentDate = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 30);
-        Date expireDate = cal.getTime();
         boolean isExpiring = false;
         if (subscriptionExpiryDate != null) {
-            isExpiring = (subscriptionExpiryDate.equals(currentDate) || subscriptionExpiryDate.after(currentDate)) &&
-                    (subscriptionExpiryDate.equals(expireDate) || subscriptionExpiryDate.before(expireDate));
+            isExpiring = subscriptionExpiryDate.after(currentDate);
         }
         return isExpiring;
     }

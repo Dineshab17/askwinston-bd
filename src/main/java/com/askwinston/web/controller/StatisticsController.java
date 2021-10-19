@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 
 @RestController
@@ -53,7 +54,7 @@ public class StatisticsController {
      */
     @GetMapping("/subscription-expiring")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<InputStreamResource> getSubscriptionExpiringReport() {
-        return HttpHelper.fileDownload(new DocumentResource("Subscription_report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", statisticsService.generateSubscriptionExpiringReportXLSX()));
+    public ResponseEntity<InputStreamResource> getSubscriptionExpiringReport(@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date from, @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date to) {
+        return HttpHelper.fileDownload(new DocumentResource("Subscription_report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", statisticsService.generateSubscriptionExpiringReportXLSX(from,to)));
     }
 }
