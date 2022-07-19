@@ -4,6 +4,7 @@ import com.askwinston.model.*;
 import com.askwinston.repository.*;
 import com.askwinston.service.StatisticsService;
 import com.askwinston.subscription.ProductSubscription;
+import com.askwinston.subscription.ProductSubscriptionItem;
 import com.askwinston.subscription.ProductSubscriptionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -504,7 +505,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             row.createCell(9).setCellValue("Subscription Renewal Date");
             row.createCell(10).setCellValue("Total Refills");
             row.createCell(11).setCellValue("Refills Left");
-            List<SubscriptionRenewedReport> subscriptionRenewedReports = getSubscriptionRenewedReportXLSX(from, to);
+            List<SubscriptionRenewedReport> subscriptionRenewedReports = getSubscriptionRenewedReport(from, to);
             subscriptionRenewedReports.forEach(report -> {
                 Row row1 = sheet.createRow(rows[0]++);
                 row1.createCell(0).setCellValue(report.getUserId());
@@ -529,7 +530,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
     }
 
-    public List<SubscriptionRenewedReport> getSubscriptionRenewedReportXLSX(Date from, Date to) {
+    public List<SubscriptionRenewedReport> getSubscriptionRenewedReport(Date from, Date to) {
 
         List<SubscriptionExpiringReport> subscriptionExpiringReports = this.getSubscriptionExpiringReport(from, to)
                 .stream().filter(report -> report.getExpiring().equals("Expired")).collect(Collectors.toList());
@@ -545,7 +546,16 @@ public class StatisticsServiceImpl implements StatisticsService {
                         .findById(subscriptionExpiringReport.getSubscriptionId()).orElseThrow(() -> {
                             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription " + subscriptionExpiringReport.getSubscriptionId() + " is not found");
                         });
-                if (productSubscription.getItems().containsAll(expiredSubscription.getItems())) {
+                boolean isRenewed = false;
+
+                for(ProductSubscriptionItem item: productSubscription.getItems()){
+                    for(ProductSubscriptionItem item1: expiredSubscription.getItems()){
+                        isRenewed = item.getProductName().equals(item1.getProductName()) &&
+                                item.getProductDosage().equals(item1.getProductDosage());
+                    }
+                }
+
+                if (isRenewed) {
                     SubscriptionRenewedReport subscriptionRenewedReport = new SubscriptionRenewedReport();
                     subscriptionRenewedReport.setUserId(subscriptionExpiringReport.getUserId());
                     subscriptionRenewedReport.setUserName(subscriptionExpiringReport.getUserName());
@@ -556,7 +566,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                     subscriptionRenewedReport.setExpiredSubscriptionId(subscriptionExpiringReport.getSubscriptionId());
                     subscriptionRenewedReport.setSubscriptionExpiredDate(subscriptionExpiringReport.getSubscriptionExpiryDate());
                     subscriptionRenewedReport.setRenewedSubscriptionId(productSubscription.getId());
-                    subscriptionRenewedReport.setSubscriptionRenewalDate(productSubscription.getDate().toString());
+                    subscriptionRenewedReport.setSubscriptionRenewalDate(productSubscription.getDate()!=null?productSubscription.getDate().toString():"");
                     subscriptionRenewedReport.setTotalRefills(productSubscription.getPrescription().getRefills());
                     subscriptionRenewedReport.setRefillsLeft(productSubscription.getPrescription().getRefillsLeft());
                     subscriptionRenewedReports.add(subscriptionRenewedReport);
