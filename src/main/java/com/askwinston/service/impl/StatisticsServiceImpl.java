@@ -566,7 +566,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                     subscriptionRenewedReport.setExpiredSubscriptionId(subscriptionExpiringReport.getSubscriptionId());
                     subscriptionRenewedReport.setSubscriptionExpiredDate(subscriptionExpiringReport.getSubscriptionExpiryDate());
                     subscriptionRenewedReport.setRenewedSubscriptionId(productSubscription.getId());
-                    subscriptionRenewedReport.setSubscriptionRenewalDate(productSubscription.getDate()!=null?productSubscription.getDate().toString():"");
+                    subscriptionRenewedReport.setSubscriptionRenewalDate(productSubscription.getCreationDate()!=null?productSubscription.getCreationDate().toString():"");
                     subscriptionRenewedReport.setTotalRefills(productSubscription.getPrescription().getRefills());
                     subscriptionRenewedReport.setRefillsLeft(productSubscription.getPrescription().getRefillsLeft());
                     subscriptionRenewedReports.add(subscriptionRenewedReport);
