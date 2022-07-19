@@ -501,7 +501,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             row.createCell(5).setCellValue("Product");
             row.createCell(6).setCellValue("Expired Subscription Id");
             row.createCell(7).setCellValue("Subscription Expired Date");
-            row.createCell(8).setCellValue("Renewed Subscription Date");
+            row.createCell(8).setCellValue("Renewed Subscription Id");
             row.createCell(9).setCellValue("Subscription Renewal Date");
             row.createCell(10).setCellValue("Total Refills");
             row.createCell(11).setCellValue("Refills Left");
