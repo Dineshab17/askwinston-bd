@@ -25,4 +25,6 @@ public interface StatisticsService {
     List<ContactUsRecord> getContactUsStatistics();
 
     byte[] generateSubscriptionExpiringReportXLSX(Date from, Date to);
+
+    byte[] generateSubscriptionRenewedReportXLSX(Date from, Date to);
 }

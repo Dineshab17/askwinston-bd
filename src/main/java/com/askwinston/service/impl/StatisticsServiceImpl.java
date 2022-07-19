@@ -10,7 +10,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -426,8 +428,11 @@ public class StatisticsServiceImpl implements StatisticsService {
             if (subscription!=null) {
                 List<PurchaseOrder> purchaseOrders = this.purchaseOrderRepository.findBySubscriptionId(subscription.getId());
                 purchaseOrders.forEach(purchaseOrder -> {
+                    log.info("purchase order with id {}", purchaseOrder.getId());
                     PurchaseOrderItem purchaseOrderItem = this.purchaseOrderItemRepository.findByPurchaseOrderId(purchaseOrder.getId());
-                    subscriptionExpiringReport.setProduct(purchaseOrderItem.getProductName());
+                    if (purchaseOrderItem != null) {
+                        subscriptionExpiringReport.setProduct(purchaseOrderItem.getProductName());
+                    }
                 });
                 subscriptionExpiringReport.setSubscriptionId(subscription.getId());
                 subscriptionExpiringReport.setSubscriptionDate(prescription.getDate() != null ? prescription.getDate().toString() : "");
@@ -476,4 +481,88 @@ public class StatisticsServiceImpl implements StatisticsService {
         return isExpiring;
     }
 
+
+    /**
+     * @return byte[]
+     * To generate Excel sheet with user's product subscription renewal data
+     */
+    @Override
+    public byte[] generateSubscriptionRenewedReportXLSX(Date from, Date to) {
+        try (Workbook book = new XSSFWorkbook()) {
+            Sheet sheet = book.createSheet("Subscription Renewal Report");
+            final int[] rows = {0};
+            Row row = sheet.createRow(rows[0]++);
+            row.createCell(0).setCellValue("Customer Id");
+            row.createCell(1).setCellValue("Customer Name");
+            row.createCell(2).setCellValue("Email");
+            row.createCell(3).setCellValue("Phone Number");
+            row.createCell(4).setCellValue("Address");
+            row.createCell(5).setCellValue("Product");
+            row.createCell(6).setCellValue("Expired Subscription Id");
+            row.createCell(7).setCellValue("Subscription Expired Date");
+            row.createCell(8).setCellValue("Renewed Subscription Date");
+            row.createCell(9).setCellValue("Subscription Renewal Date");
+            row.createCell(10).setCellValue("Total Refills");
+            row.createCell(11).setCellValue("Refills Left");
+            List<SubscriptionRenewedReport> subscriptionRenewedReports = getSubscriptionRenewedReportXLSX(from, to);
+            subscriptionRenewedReports.forEach(report -> {
+                Row row1 = sheet.createRow(rows[0]++);
+                row1.createCell(0).setCellValue(report.getUserId());
+                row1.createCell(1).setCellValue(report.getUserName());
+                row1.createCell(2).setCellValue(report.getEmail());
+                row1.createCell(3).setCellValue(report.getPhoneNumber());
+                row1.createCell(4).setCellValue(report.getAddress());
+                row1.createCell(5).setCellValue(report.getProduct());
+                row1.createCell(6).setCellValue(report.getExpiredSubscriptionId());
+                row1.createCell(7).setCellValue(report.getSubscriptionExpiredDate());
+                row1.createCell(8).setCellValue(report.getRenewedSubscriptionId());
+                row1.createCell(9).setCellValue(report.getSubscriptionRenewalDate());
+                row1.createCell(10).setCellValue(report.getTotalRefills());
+                row1.createCell(11).setCellValue(report.getRefillsLeft());
+            });
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            book.write(outputStream);
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new byte[0];
+        }
+    }
+
+    public List<SubscriptionRenewedReport> getSubscriptionRenewedReportXLSX(Date from, Date to) {
+
+        List<SubscriptionExpiringReport> subscriptionExpiringReports = this.getSubscriptionExpiringReport(from, to)
+                .stream().filter(report -> report.getExpiring().equals("Expired")).collect(Collectors.toList());
+
+        List<SubscriptionRenewedReport> subscriptionRenewedReports = new ArrayList<>();
+
+        for (SubscriptionExpiringReport subscriptionExpiringReport : subscriptionExpiringReports) {
+            List<ProductSubscription> productSubscriptions = this.productSubscriptionRepository
+                    .findAllByUserIdAndStatus(subscriptionExpiringReport.getUserId(), ProductSubscription.Status.ACTIVE);
+
+            for (ProductSubscription productSubscription : productSubscriptions) {
+                ProductSubscription expiredSubscription = this.productSubscriptionRepository
+                        .findById(subscriptionExpiringReport.getSubscriptionId()).orElseThrow(() -> {
+                            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription " + subscriptionExpiringReport.getSubscriptionId() + " is not found");
+                        });
+                if (productSubscription.getItems().containsAll(expiredSubscription.getItems())) {
+                    SubscriptionRenewedReport subscriptionRenewedReport = new SubscriptionRenewedReport();
+                    subscriptionRenewedReport.setUserId(subscriptionExpiringReport.getUserId());
+                    subscriptionRenewedReport.setUserName(subscriptionExpiringReport.getUserName());
+                    subscriptionRenewedReport.setEmail(subscriptionExpiringReport.getEmail());
+                    subscriptionRenewedReport.setAddress(subscriptionExpiringReport.getAddress());
+                    subscriptionRenewedReport.setProduct(subscriptionExpiringReport.getProduct());
+                    subscriptionRenewedReport.setPhoneNumber(subscriptionExpiringReport.getPhoneNumber());
+                    subscriptionRenewedReport.setExpiredSubscriptionId(subscriptionExpiringReport.getSubscriptionId());
+                    subscriptionRenewedReport.setSubscriptionExpiredDate(subscriptionExpiringReport.getSubscriptionExpiryDate());
+                    subscriptionRenewedReport.setRenewedSubscriptionId(productSubscription.getId());
+                    subscriptionRenewedReport.setSubscriptionRenewalDate(productSubscription.getDate().toString());
+                    subscriptionRenewedReport.setTotalRefills(productSubscription.getPrescription().getRefills());
+                    subscriptionRenewedReport.setRefillsLeft(productSubscription.getPrescription().getRefillsLeft());
+                    subscriptionRenewedReports.add(subscriptionRenewedReport);
+                }
+            }
+        }
+        return subscriptionRenewedReports;
+    }
 }

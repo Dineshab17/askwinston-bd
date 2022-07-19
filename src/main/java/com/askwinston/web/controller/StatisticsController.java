@@ -57,4 +57,14 @@ public class StatisticsController {
     public ResponseEntity<InputStreamResource> getSubscriptionExpiringReport(@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date from, @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date to) {
         return HttpHelper.fileDownload(new DocumentResource("Subscription_report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", statisticsService.generateSubscriptionExpiringReportXLSX(from,to)));
     }
+
+    /**
+     * @return ResponseEntity<InputStreamResource>
+     * To generate and download user's subscription expiring data
+     */
+    @GetMapping("/subscription-renewed")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<InputStreamResource> getSubscriptionRenewedReport(@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date from, @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date to) {
+        return HttpHelper.fileDownload(new DocumentResource("Subscription_renewed_report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", statisticsService.generateSubscriptionRenewedReportXLSX(from,to)));
+    }
 }

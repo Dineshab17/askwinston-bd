@@ -18,4 +18,6 @@ public interface ProductSubscriptionRepository extends CrudRepository<ProductSub
     List<ProductSubscription> findAllByStatusIn(ProductSubscription.Status... status);
 
     ProductSubscription findByPrescriptionId(Long id);
+
+    List<ProductSubscription> findAllByUserIdAndStatus(Long userId, ProductSubscription.Status status);
 }
