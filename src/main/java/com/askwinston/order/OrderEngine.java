@@ -319,7 +319,10 @@ public class OrderEngine {
     public void updateShippingAddressToOrder(Long userId, ShippingAddress shippingAddress){
         List<PurchaseOrder> purchaseOrders = this.purchaseOrderRepository.findByUserIdAndStatusIn(userId, Arrays.asList(PurchaseOrder.Status.IN_PROGRESS,
                                                         PurchaseOrder.Status.WAITING_PHARMACIST,
-                                                        PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK));
+                                                        PurchaseOrder.Status.WAITING_PHARMACY_RX_CHECK,
+                                                        PurchaseOrder.Status.PAUSED,
+                                                        PurchaseOrder.Status.PAUSED_RX_TRANSFER,
+                                                        PurchaseOrder.Status.PAUSED_BY_PATIENT));
         purchaseOrders.forEach(order -> {
             order.setShippingAddressCity(shippingAddress.getAddressCity());
             order.setShippingAddressLine1(shippingAddress.getAddressLine1());
