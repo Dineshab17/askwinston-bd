@@ -2,11 +2,10 @@ package com.askwinston.subscription;
 
 import com.askwinston.model.*;
 import com.askwinston.notification.Notifiable;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

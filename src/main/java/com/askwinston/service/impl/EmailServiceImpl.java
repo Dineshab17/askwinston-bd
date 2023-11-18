@@ -3,6 +3,8 @@ package com.askwinston.service.impl;
 import com.askwinston.model.Inline;
 import com.askwinston.model.Province;
 import com.askwinston.service.EmailService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -12,8 +14,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.*;

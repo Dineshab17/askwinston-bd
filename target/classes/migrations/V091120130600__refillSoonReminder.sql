@@ -155,7 +155,7 @@ values (true, 0, false,
                         <br>
                         <p>We would like to remind you that the next refill of your order (ID {subscriptionId}-{refillNumber}: {productDosage}) will be processed on {orderProcessingDate}.</p>
                         <br>
-                        <p>If you are not ready to accept a refill, you can access your account and skip it. This can be done through the Order History page under your Account Profile. You will need to complete this before the order is processed on {nextOrderDate}.</p>
+                        <p>If you are not ready to accept a refill or looking to update shipping address, you can access your account and skip your order or update your new shipping information. This can be done through the Order History page or Account Profile. You will need to complete this before the order is processed on {orderProcessingDate}.</p>
                         <br>
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr>

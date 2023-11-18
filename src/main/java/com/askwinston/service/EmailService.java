@@ -2,8 +2,8 @@ package com.askwinston.service;
 
 import com.askwinston.model.Inline;
 import com.askwinston.model.Province;
+import jakarta.mail.MessagingException;
 
-import javax.mail.MessagingException;
 import java.util.List;
 
 public interface EmailService {

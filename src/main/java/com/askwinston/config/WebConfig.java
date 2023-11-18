@@ -2,6 +2,7 @@ package com.askwinston.config;
 
 import com.askwinston.helper.ParsingHelper;
 import com.askwinston.repository.NotificationTemplateRepository;
+import jakarta.persistence.EntityManagerFactory;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.persistence.EntityManagerFactory;
 import java.util.concurrent.TimeUnit;
 
 @Configuration

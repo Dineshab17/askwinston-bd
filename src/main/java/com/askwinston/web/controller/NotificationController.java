@@ -26,7 +26,6 @@ import java.util.List;
 public class NotificationController {
 
     private static final String TEMPLATE_NOT_FOUND_ERROR_MESSAGE = "Template not found";
-
     private NotificationService notificationService;
     private NotificationTemplateService notificationTemplateService;
     private ParsingHelper parsingHelper;

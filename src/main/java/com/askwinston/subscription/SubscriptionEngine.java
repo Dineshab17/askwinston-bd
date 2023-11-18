@@ -12,6 +12,8 @@ import com.askwinston.service.PromoCodeService;
 import com.askwinston.service.RxTransferService;
 import com.askwinston.service.UserService;
 import com.askwinston.web.dto.RxTransferSubscriptionDto;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;

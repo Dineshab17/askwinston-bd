@@ -8,16 +8,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig{
 
     private final JwtService jwtService;
 
@@ -30,62 +31,65 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/").permitAll()
-                .antMatchers(HttpMethod.GET, "/index.html").permitAll()
-                .antMatchers(HttpMethod.GET, "/sitemap.xml").permitAll()
-                .antMatchers(HttpMethod.GET, "/robots.txt").permitAll()
-                .antMatchers(HttpMethod.GET, "/favicon.jpg").permitAll()
-                .antMatchers(HttpMethod.GET, "/*.js").permitAll()
-                .antMatchers(HttpMethod.GET, "/static/**").permitAll()
+    @Bean
+    protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        http.cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorize->
+                                authorize.requestMatchers(HttpMethod.GET, "/").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/index.html").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/index.html").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/sitemap.xml").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/robots.txt").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/favicon.jpg").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/*.js").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/static/**").permitAll()
+//                 Opening links for routing on FE
+                                        .requestMatchers(HttpMethod.GET, "/reset-password/*").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/faq").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/cabinet").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/profile").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/orders").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/shop").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/how-it-works").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/learn").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/messages").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/about-us").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/why-winston").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/login").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/terms-of-use").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/privacy-policy").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/contact-us").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/contact-us-record").permitAll() //
 
-                // Opening links for routing on FE
-                .antMatchers(HttpMethod.GET, "/reset-password/*").permitAll() //
-                .antMatchers(HttpMethod.GET, "/faq").permitAll() //
-                .antMatchers(HttpMethod.GET, "/cabinet").permitAll() //
-                .antMatchers(HttpMethod.GET, "/profile").permitAll() //
-                .antMatchers(HttpMethod.GET, "/orders").permitAll() //
-                .antMatchers(HttpMethod.GET, "/shop").permitAll() //
-                .antMatchers(HttpMethod.GET, "/how-it-works").permitAll() //
-                .antMatchers(HttpMethod.GET, "/learn").permitAll() //
-                .antMatchers(HttpMethod.GET, "/messages").permitAll() //
-                .antMatchers(HttpMethod.GET, "/about-us").permitAll() //
-                .antMatchers(HttpMethod.GET, "/why-winston").permitAll() //
-                .antMatchers(HttpMethod.GET, "/login").permitAll() //
-                .antMatchers(HttpMethod.GET, "/terms-of-use").permitAll() //
-                .antMatchers(HttpMethod.GET, "/privacy-policy").permitAll() //
-                .antMatchers(HttpMethod.GET, "/contact-us").permitAll() //
-                .antMatchers(HttpMethod.GET, "/contact-us-record").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/v2/api-docs/**").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/swagger.json").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/webjars/**").permitAll() //
 
-                .antMatchers(HttpMethod.GET, "/actuator/**").permitAll() //
-                .antMatchers(HttpMethod.GET, "/v2/api-docs/**").permitAll() //
-                .antMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll() //
-                .antMatchers(HttpMethod.GET, "/swagger.json").permitAll() //
-                .antMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll() //
-                .antMatchers(HttpMethod.GET, "/webjars/**").permitAll() //
+                                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/user/forgot-password/*").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/user/reset-password/*").permitAll()
+                                        // .antMatchers(HttpMethod.GET, "/order/promo-code/*").permitAll() //
+                                        .requestMatchers(HttpMethod.POST, "/patient").permitAll() // WASNT COMMENTED
+                                        .requestMatchers(HttpMethod.PUT, "/patient/*").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/product").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/product/*").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/token/*/validate").permitAll() //
+                                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/stay-connected").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/contact-us-record").permitAll()
 
-                .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/user/forgot-password/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/user/reset-password/*").permitAll()
-                // .antMatchers(HttpMethod.GET, "/order/promo-code/*").permitAll() //
-                .antMatchers(HttpMethod.POST, "/patient").permitAll() // WASNT COMMENTED
-                .antMatchers(HttpMethod.PUT, "/patient/*").permitAll().antMatchers(HttpMethod.GET, "/product")
-                .permitAll() //
-                .antMatchers(HttpMethod.GET, "/product/*").permitAll() //
-                .antMatchers(HttpMethod.GET, "/token/*/validate").permitAll() //
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().antMatchers(HttpMethod.POST, "/stay-connected")
-                .permitAll().antMatchers(HttpMethod.POST, "/contact-us-record").permitAll()
-
-                .antMatchers(HttpMethod.GET, "/document").permitAll() //
-                .antMatchers(HttpMethod.GET, "/document/*").permitAll() //
-                .antMatchers(HttpMethod.GET, "/**").permitAll()
-
-                .antMatchers("/unsecure/**").permitAll() //
-                .anyRequest().authenticated().and()
+                                        .requestMatchers(HttpMethod.GET, "/document").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/document/*").permitAll() //
+                                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                                        .requestMatchers("/unsecure/**").permitAll().anyRequest().authenticated()
+                )
                 .addFilterBefore(new AuthenticationTokenFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionManagement(sessionManagement->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        return http.build();
     }
 
 }

@@ -1,14 +1,10 @@
 package com.askwinston.web.dto;
 
 import com.askwinston.model.NotificationTarget;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +19,7 @@ public class NotificationTemplatePersistenceDto {
     private NotificationTarget target;
     private String notificationEventTypeName;
     private String subjectTemplate;
-    @Type(type = "text")
+    @Column(columnDefinition ="TEXT")
     private String htmlTemplate;
     private boolean active;
     private boolean deferred;

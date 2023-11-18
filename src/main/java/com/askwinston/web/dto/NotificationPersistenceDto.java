@@ -1,10 +1,10 @@
 package com.askwinston.web.dto;
 
 import com.askwinston.model.Notification;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Data

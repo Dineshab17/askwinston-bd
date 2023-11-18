@@ -2,9 +2,9 @@ package com.askwinston.model;
 
 import com.askwinston.notification.Notifiable;
 import com.askwinston.subscription.ProductSubscription;
+import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;

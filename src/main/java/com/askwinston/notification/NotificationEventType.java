@@ -2,10 +2,10 @@
 package com.askwinston.notification;
 
 import com.askwinston.model.NotificationTarget;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import org.springframework.data.util.Pair;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.function.Function;
 

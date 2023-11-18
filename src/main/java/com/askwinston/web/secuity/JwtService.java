@@ -49,10 +49,10 @@ public class JwtService {
     public AwUserPrincipal parseToken(String token) {
         DecodedJWT jwt = JWT.require(HMAC512(secret.getBytes())).build().verify(token);
         if (Instant.now().isBefore(jwt.getNotBefore().toInstant())) {
-            throw new TokenExpiredException("expired");
+            throw new TokenExpiredException("expired",jwt.getExpiresAtAsInstant());
         }
         if (Instant.now().isAfter(jwt.getExpiresAt().toInstant())) {
-            throw new TokenExpiredException("expired");
+            throw new TokenExpiredException("expired",jwt.getExpiresAtAsInstant());
         }
         return new AwUserPrincipal(jwt.getClaim(ID_CLAIM).asLong(), jwt.getSubject(), jwt.getClaim(AUTHORITY_CLAIM).asString());
     }

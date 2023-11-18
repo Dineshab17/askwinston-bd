@@ -1,11 +1,11 @@
 package com.askwinston.web.dto;
 
 import com.askwinston.model.NotificationTarget;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor

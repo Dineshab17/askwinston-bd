@@ -7,6 +7,7 @@ import com.askwinston.notification.mapper.EntityModelMapper;
 import com.askwinston.service.EmailService;
 import com.askwinston.service.NotificationService;
 import com.askwinston.service.NotificationTemplateService;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.repository.CrudRepository;
@@ -16,7 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
+
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
